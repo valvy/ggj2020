@@ -5,6 +5,10 @@ import play.api.db.Database
 import play.api.libs.json.Json
 import play.api.mvc._
 
+import sangria.schema._
+import sangria.execution._
+import sangria.macros._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 @Singleton
@@ -12,20 +16,30 @@ class RestTestController @Inject()(db: Database, cc: ControllerComponents) exten
 
 
   def testApi = Action {
+      val QueryType = ObjectType("Query", fields[Unit, Unit](
+        Field("hello", StringType, resolve = _ ⇒ "Hello world!")
+      ))
 
-    var outString = ""
-    val conn      = db.getConnection()
+      val schema = Schema(QueryType)
 
-    try {
-      val stmt = conn.createStatement
-      val rs   = stmt.executeQuery("SELECT * from PERSON")
+      val query = graphql"{ hello }"
 
-      while (rs.next()) {
-        outString += rs.getString("NAME")
+      val result = Executor.execute(schema, query)
+      //result.foreach(res ⇒ println(res))
+      result.
+      var outString = ""
+      val conn      = db.getConnection()
+
+      try {
+        val stmt = conn.createStatement
+        val rs   = stmt.executeQuery("SELECT * from PERSON")
+
+        while (rs.next()) {
+          outString += rs.getString("NAME")
+        }
+      } finally {
+        conn.close()
       }
-    } finally {
-      conn.close()
-    }
 
 
      Ok(Json.obj("id" -> outString))
