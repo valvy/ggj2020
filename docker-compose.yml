@@ -21,3 +21,11 @@ services:
       - "9001:9000"
     depends_on:
       - database
+  frontend:
+    # The angular app. Which is dependend on the backend.
+    build: ./frontend
+    container_name: formfiller-frontend-service
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
