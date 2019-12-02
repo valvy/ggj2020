@@ -4,3 +4,4 @@
 # ~~~~
 
 GET     /                      controllers.RestTestController.testApi
+GET     /graphql               controllers.GraphQLController.graphQLAPI
