@@ -3,5 +3,5 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                      controllers.RestTestController.testApi
+GET     /users/:id             controllers.RestTestController.testApi(id)
 GET     /graphql               controllers.GraphQLController.graphQLAPI

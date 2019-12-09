@@ -10,7 +10,7 @@ import play.api.mvc._
 class RestTestController @Inject()(db: Database, cc: ControllerComponents) extends AbstractController(cc) {
 
 
-  def testApi = Action {
+  def testApi(id: String) = Action {
 
       var outString = ""
       val conn      = db.getConnection()
@@ -27,7 +27,7 @@ class RestTestController @Inject()(db: Database, cc: ControllerComponents) exten
       }
 
 
-     Ok(Json.obj("id" -> outString))
+     Ok(Json.obj("id" -> outString, "test" -> id))
   }
 
 }
