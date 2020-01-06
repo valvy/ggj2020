@@ -1,9 +1,9 @@
-FROM mysql:latest AS backend-database
+FROM postgres:latest AS backend-database
 LABEL maintainer.name = "Heiko van der Heijden"
 #todo. Remove the stupid magic numbers.
-ENV MYSQL_ROOT_PASSWORD=user
-ENV MYSQL_ROOT_PASSWORD=password
+ENV POSTGRES_USER=user
+ENV POSTGRES_PASSWORD=example
 
 COPY  ./data/*.sql  docker-entrypoint-initdb.d/
 
-EXPOSE 3306
+EXPOSE 5432

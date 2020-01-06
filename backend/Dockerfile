@@ -1,4 +1,4 @@
-FROM openjdk:12 AS backend-formfiller
+FROM openjdk:12 AS backend-GGJ2020
 LABEL maintainer.name = "Heiko van der Heijden"
 #todo. Remove the stupid magic numbers.
 

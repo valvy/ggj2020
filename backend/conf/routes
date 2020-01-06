@@ -4,4 +4,3 @@
 # ~~~~
 
 GET     /users/:id             controllers.RestTestController.testApi(id)
-GET     /graphql               controllers.GraphQLController.graphQLAPI

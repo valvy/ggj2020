@@ -7,4 +7,5 @@ target
 .idea
 out
 
+/dist
 .DS_STORE

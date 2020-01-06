@@ -2,7 +2,7 @@ version: "2"
 services:
   database:
     build: ./database
-    container_name: formfiller-db-service
+    container_name: GGJ2020-db-service
     ports: 
       - "3306:3306"
     environment:
@@ -12,7 +12,7 @@ services:
       - MYSQL_DATABASE=demodb
   backend: 
     build: ./backend
-    container_name: formfiller-api-service
+    container_name: GGJ2020-api-service
     environment:
       # Override the database.
       - DATABASE_HOST=jdbc:mysql://database/TEST
@@ -24,7 +24,7 @@ services:
   frontend:
     # The angular app. Which is dependend on the backend.
     build: ./frontend
-    container_name: formfiller-frontend-service
+    container_name: GGJ2020-frontend-service
     ports:
       - "8080:80"
     depends_on:

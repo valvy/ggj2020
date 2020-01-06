@@ -1,6 +1,14 @@
-CREATE DATABASE TEST;
+CREATE DATABASE sampledb
+    WITH 
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1;
 
-USE TEST;
+
+/*
+    Postgres way of selecting the database.
+*/
+
+\c sampledb
 
 CREATE TABLE PERSON (
     ID INTEGER NOT NULL,

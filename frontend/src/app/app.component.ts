@@ -7,7 +7,7 @@ import { FormfillerService } from './services/formfiller.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'formfiller-frontend';
+  title = 'GGJ2020-frontend';
   data : string;
   constructor(private formfiller : FormfillerService ) {
     formfiller.getStuff().subscribe((dat) => {
