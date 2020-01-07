@@ -7,7 +7,6 @@ CREATE DATABASE sampledb
 /*
     Postgres way of selecting the database.
 */
-
 \c sampledb
 
 CREATE TABLE PERSON (
