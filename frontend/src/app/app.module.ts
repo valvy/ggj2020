@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { FormfillerService } from './services/formfiller.service';
+import { GGJ2020Service } from './services/ggj2020.service';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,7 @@ import { FormfillerService } from './services/formfiller.service';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [FormfillerService],
+  providers: [GGJ2020Service],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

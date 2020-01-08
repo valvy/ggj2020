@@ -4,6 +4,6 @@ LABEL maintainer.name = "Heiko van der Heijden"
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=example
 
-COPY  ./data/*.sql  docker-entrypoint-initdb.d/
+COPY  initfiles/*.sql  docker-entrypoint-initdb.d/
 
 EXPOSE 5432

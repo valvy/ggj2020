@@ -2,5 +2,5 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
-
+GET     /api/users/:id         controllers.RestTestController.testApi(id)
 GET     /users/:id             controllers.RestTestController.testApi(id)

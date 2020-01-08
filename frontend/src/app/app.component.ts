@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormfillerService } from './services/formfiller.service';
+import { GGJ2020Service } from './services/ggj2020.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +9,7 @@ import { FormfillerService } from './services/formfiller.service';
 export class AppComponent {
   title = 'GGJ2020-frontend';
   data : string;
-  constructor(private formfiller : FormfillerService ) {
+  constructor(private formfiller : GGJ2020Service ) {
     formfiller.getStuff().subscribe((dat) => {
         this.data = dat.id;
      

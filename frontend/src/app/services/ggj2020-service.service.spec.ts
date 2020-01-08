@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FormfillerService } from './formfiller.service';
+import { GGJ2020Service } from './ggj2020.service';
 
-describe('FormfillerServiceService', () => {
+describe('GGJ2020Service', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: FormfillerService = TestBed.get(FormfillerService);
+    const service: GGJ2020Service = TestBed.get(GGJ2020Service);
     expect(service).toBeTruthy();
   });
 });

@@ -8,9 +8,9 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class FormfillerService {
+export class GGJ2020Service {
 
-  private endpoint : string = "http://localhost:9001";
+  private endpoint : string = "http://localhost:8080/api";
 
   constructor(private http: HttpClient) {
         // setup the endpoint
@@ -26,7 +26,7 @@ export class FormfillerService {
       })
     };
     
-    return this.http.get<any>(`${this.endpoint}/`, httpOptions);
+    return this.http.get<any>(`${this.endpoint}/users/1`, httpOptions);
   }
 
 
