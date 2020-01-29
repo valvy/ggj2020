@@ -1,15 +1,20 @@
-name := "GGJ2020-Backend"
- 
-version := "1.0" 
-      
-lazy val `GGJ2020-BackEnd` = (project in file(".")).enablePlugins(PlayScala)
+name := """play-scala-seed"""
+organization := "com.example"
 
-resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
-      
-resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
+version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.12.2"
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-libraryDependencies ++= Seq( jdbc ,  ehcache , ws , specs2 % Test , guice )
+scalaVersion := "2.13.1"
+
+
+libraryDependencies += guice
+libraryDependencies += jdbc
 libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1206-jdbc41"
-unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+
+// Adds additional packages into Twirl
+//TwirlKeys.templateImports += "com.example.controllers._"
+
+// Adds additional packages into conf/routes
+// play.sbt.routes.RoutesKeys.routesImport += "com.example.binders._"
