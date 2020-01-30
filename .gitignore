@@ -6,6 +6,6 @@ target
 *.iws
 .idea
 out
-
+/logs
 /dist
 .DS_STORE
