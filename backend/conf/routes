@@ -4,3 +4,4 @@
 # ~~~~
 
 ->  /                      controllers.PlayerRouter
+GET /ws                     controllers.MyWebSocketActor.socket

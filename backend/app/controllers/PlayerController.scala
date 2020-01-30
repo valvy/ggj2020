@@ -19,38 +19,33 @@ class PlayerController @Inject()(
                                   val controllerComponents: ControllerComponents
                                 )
                                 (implicit ec: ExecutionContext)
-                                extends BaseController {
+  extends BaseController {
 
   def createGame() = Action.async { implicit request: Request[AnyContent] =>
     //Ok(Json.obj("Action" ->"GET", "test" -> "test"))
-/*    Ok(Json.toJson(
-      Player(1, "Heiko", 28)
-    ))*/
-    playerRepository.createGame().map( data =>
+    /*    Ok(Json.toJson(
+          Player(1, "Heiko", 28)
+        ))*/
+    playerRepository.createGame().map(data =>
       Ok(Json.toJson(data))
     )
   }
-  def index : Action[AnyContent] = Action.async { implicit request =>
-      //Ok(Json.obj("Action" ->"GET", "test" -> "test"))
 
-      Future.successful(
-        Ok(Json.toJson(
-          Player(1, "Heiko", 28)
-        ))
-      )
+  def index: Action[AnyContent] = Action.async { implicit request =>
+    //Ok(Json.obj("Action" ->"GET", "test" -> "test"))
 
-
-
-  
-  
+    Future.successful(
+      Ok(Json.toJson(
+        Player(1, "Heiko", 28)
+      ))
+    )
   }
 
   def process(id: Int) = Action { implicit request: Request[AnyContent] =>
 
-      val dat = request.body.asJson.get("hello")
-      Ok(Json.obj("id" ->"POST", "test" -> id, "data"-> dat))
+    val dat = request.body.asJson.get("hello")
+    Ok(Json.obj("id" -> "POST", "test" -> id, "data" -> dat))
   }
-
 
 
 }

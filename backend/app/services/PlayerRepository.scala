@@ -47,37 +47,37 @@ class PlayerRepository @Inject() (db: Database)
         // Create a Random game
         logger.info("Creating a new game.")
         Future {
-            try {
-                val connection = db.getConnection();
-                // Make sure its a really random string.
-                var randomString = ""
-                do {
-                    val MAX_URI_LENGTH = 244
-                    randomString = generateRandomString(MAX_URI_LENGTH)
-                } while (existsGame(randomString))
 
-                // Insert a new game.
-                val insertStatement = connection.prepareStatement(
-                    "INSERT INTO GAME" +
-                      "(CREATED, URI, CLOSED)" +
-                      "VALUES(NOW(),?,'0');"
-                )
+            val connection = db.getConnection();
+            // Make sure its a really random string.
+            var randomString = ""
+            do {
+                val MAX_URI_LENGTH = 244
+                randomString = generateRandomString(MAX_URI_LENGTH)
+            } while (existsGame(randomString))
 
-                insertStatement.setString(1, randomString)
-                insertStatement.execute()
-                val getStatement = connection.prepareStatement(
-                    "SELECT CREATED, URI, CLOSED FROM GAME WHERE URI = ?"
-                )
-                getStatement.setString(1, randomString)
-                val finalResult = getStatement.executeQuery()
-                finalResult.next()
-                new Game(
-                    finalResult.getDate("CREATED"),
-                    finalResult.getString("URI"),
-                    finalResult.getBoolean("CLOSED")
-                )
-            }
+            // Insert a new game.
+            val insertStatement = connection.prepareStatement(
+                "INSERT INTO GAME" +
+                  "(CREATED, URI, CLOSED)" +
+                  "VALUES(NOW(),?,'0');"
+            )
+
+            insertStatement.setString(1, randomString)
+            insertStatement.execute()
+            val getStatement = connection.prepareStatement(
+                "SELECT CREATED, URI, CLOSED FROM GAME WHERE URI = ?"
+            )
+            getStatement.setString(1, randomString)
+            val finalResult = getStatement.executeQuery()
+            finalResult.next()
+            new Game(
+                finalResult.getDate("CREATED"),
+                finalResult.getString("URI"),
+                finalResult.getBoolean("CLOSED")
+            )
         }
+
     }
 
     def getPlayer(id : Int) : Future[Player] = {

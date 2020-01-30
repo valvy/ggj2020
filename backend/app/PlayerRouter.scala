@@ -9,8 +9,8 @@ import play.api.routing.SimpleRouter
 import play.api.routing.sird._
 
 /**
-  * Routes and URLs to the PostResource controller.
-  */
+ * Routes and URLs to the PostResource controller.
+ */
 class PlayerRouter @Inject()(controller: PlayerController) extends SimpleRouter {
   val prefix = "/v1/posts"
 
