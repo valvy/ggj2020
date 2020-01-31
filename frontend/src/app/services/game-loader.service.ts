@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ViewportManager } from '../game_logic/viewport';
 import * as PIXI from 'pixi.js';
-import { Subject } from 'rxjs';
 import { FileLoader } from '../game_logic/fileloader';
 
 @Injectable({
@@ -10,7 +9,6 @@ import { FileLoader } from '../game_logic/fileloader';
 export class GameLoaderService
 {
     private pixi: PIXI.Application; // this will be our pixi application
-    private graphics: PIXI.Graphics;
     private _viewport: ViewportManager;
     private _fileLoader: FileLoader;
    
@@ -32,7 +30,6 @@ export class GameLoaderService
     private initPixi(): void
     {
         this.pixi = new PIXI.Application({ backgroundColor: 0x0 });
-        this.graphics = new PIXI.Graphics();
 
         PIXI.autoDetectRenderer({ 
             width: window.innerWidth,
@@ -45,18 +42,23 @@ export class GameLoaderService
     {
         this.initPixi();
         this._viewport = new ViewportManager(this.pixi);
-        this._viewport.initViewport(window.innerWidth * 2, window.innerHeight * 2);
+        this._viewport.initViewport();
         this.resizePixi(); //can also be done on resize event.
         
         this.loadFiles(cb);
-
         return this.pixi.view;
+    }
+
+    public addChild(c: any): void
+    {
+        this._viewport.addChild(c);
     }
 
     private loadFiles(onFilesLoaded: () => void): void
     {
         this._fileLoader = new FileLoader();
         this._fileLoader.loadTextures(['assets/soldier_5.png'], onFilesLoaded);
+        this.pixi.start();
     }    
 
     public resizePixi(): void

@@ -22,11 +22,11 @@ export class GameManagerService
 
         const texture: Texture = this.fileLoader.getTextures(['assets/soldier_5.png'])[0];
         this.testThingy = new Sprite(texture);
-        this.testThingy.x = window.innerWidth;
-        this.testThingy.y = window.innerHeight;
+        this.testThingy.x = window.innerWidth / 2;
+        this.testThingy.y = window.innerHeight / 2;
         this.testThingy.anchor.set(0.5);
         this.gameLoader.addGameLoopTicker(this.updateCycle.bind(this));
-        this.viewport.addChild(this.testThingy);
+        this.gameLoader.addChild(this.testThingy);
     }
 
     private updateCycle(delta: number): void
