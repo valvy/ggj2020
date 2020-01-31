@@ -50,14 +50,14 @@ export class ViewportManager
         this.viewport.addChild(c);
     }
 
-    public get $position(): Vector
+    public get position(): Vector
     {
         const x: number = this.viewport.x;
         const y: number = this.viewport.y;
         return new Vector(x, y);
     }
 
-    public get $scale(): Vector
+    public get scale(): Vector
     {
         const x: number = this.viewport.scale.x;
         const y: number = this.viewport.scale.y;

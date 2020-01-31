@@ -1,5 +1,6 @@
+import { GameManagerService } from './../../services/game-manager.service';
 import { Vector } from 'vector2d';
-import { GameService } from './../../services/game.service';
+import { GameLoaderService } from '../../services/game-loader.service';
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
@@ -13,12 +14,13 @@ export class GameComponent implements AfterViewInit
     @ViewChild('uiContainer', {static: false}) uiContainer: ElementRef;
 
     private interactionStart: Vector;
-    constructor(private gameService: GameService) { }
+    constructor(private gameLoader: GameLoaderService, private gameManager: GameManagerService) { }
 
     ngAfterViewInit()
-    {
-        const canvas: HTMLCanvasElement = this.gameService.init(() =>
+    {        
+        const canvas: HTMLCanvasElement = this.gameLoader.init(() =>
         {
+            this.gameManager.startGame();
             return this.pixiContainer.nativeElement.appendChild(canvas);
         });
     }    
@@ -68,5 +70,4 @@ export class GameComponent implements AfterViewInit
         const y: number = event.clientY;
         this.onUp(x, y);
     }
-
 }
