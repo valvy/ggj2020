@@ -6,14 +6,15 @@ import { GGJ2020Service } from './services/ggj2020.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'GGJ2020-frontend';
-  data : string;
-  constructor(private formfiller : GGJ2020Service ) {
-    formfiller.getStuff().subscribe((dat) => {
-        this.data = dat.id;
-     
-    });
-    
-  }
+export class AppComponent 
+{
+    title = 'GGJ2020-frontend';
+    data : string;
+    constructor(private formfiller : GGJ2020Service )
+    {
+        formfiller.getStuff().subscribe((dat) =>
+        {
+            this.data = dat.id;     
+        });    
+    }
 }
