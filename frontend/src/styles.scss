@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~bootstrap/dist/css/bootstrap.css';
+@import url('https://fonts.googleapis.com/css?family=Bowlby+One+SC');
+
+@font-face {
+    font-family: BreatheFire;
+    src: url("./assets/fonts/BreatheFire.otf") format("opentype");
+}
+
+@font-face {
+    font-family: FenwickWood;
+    src: url("./assets/fonts/FenwickWoodtype.ttf") format('truetype')
+}
+
+body 
+{
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
