@@ -1,6 +1,6 @@
-import { GameManagerService } from './../../services/game-manager.service';
+import { GameManagerService } from '../../../services/game-manager.service';
 import { Vector } from 'vector2d';
-import { GameLoaderService } from '../../services/game-loader.service';
+import { GameLoaderService } from '../../../services/game-loader.service';
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
