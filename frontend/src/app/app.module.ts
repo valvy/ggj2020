@@ -11,7 +11,8 @@ import { UiComponent } from './game_logic/ui/ui.component';
 
 const routes: Routes =
 [
-    { path: 'game', component: GameComponent }
+    { path: 'game', component: GameComponent },
+    { path: '', redirectTo: 'game', pathMatch: 'full' }
 ];
 @NgModule({
   declarations: [
