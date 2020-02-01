@@ -48,7 +48,11 @@ export class GameLoaderService
     private loadFiles(onFilesLoaded: () => void): void
     {
         this._fileLoader = new FileLoader();
-        this._fileLoader.loadTextures(['assets/cards/card-bg.png',
+        this._fileLoader.loadTextures(['assets/cards/card-bg.png', 
+        //house stuff
+        'assets/house/Base_House.png', 'assets/house/fixed/Door.png', 'assets/house/fixed/Roof.png', 'assets/house/fixed/Windows.png' ,
+
+        //cards stuff
             'assets/cards/defend.png', 'assets/cards/attack.png', 'assets/cards/build.png',
             'assets/cards/door.png', 'assets/cards/roof.png', 'assets/cards/window.png'], onFilesLoaded);
         this._pixi.start();

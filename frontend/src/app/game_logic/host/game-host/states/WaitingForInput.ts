@@ -1,10 +1,11 @@
-import { StateType } from './../state-manager';
+import { StateType, iAction } from './../state-manager';
 import { State } from './State';
 import { TextStyle, Text } from 'pixi.js'; 
 import { TextStyles } from 'src/app/textStyle';
 
 export class WaitingForInputs extends State
 {
+    private actions: iAction[] = [];
     private _startTime: number;
     private _text: Text;
     private _date: Date;
@@ -39,6 +40,26 @@ export class WaitingForInputs extends State
         this._text.text = 'Make your choice!\n' + timeLeft.toFixed(3);
         if (timeLeft <= 0)
         {
+            this._stateManager.doGetRequest('http://localhost:9000/game/player').subscribe((data) =>
+            {
+                this.actions.splice(0);
+                data.Players.forEach(e =>
+                {
+                    const lastcardPlayed: iAction = e.lastCards.pop();
+                    if (lastcardPlayed)
+                    {
+                        this.actions.push(lastcardPlayed);
+                        let n: number = this.actions.length;
+                        while (n > 1 && this.actions[n].priority > this.actions[n - 1].priority)
+                        {
+                            const temp: iAction = JSON.parse(JSON.stringify(this.actions[n]));
+                            this.actions[n] = this.actions[n - 1];
+                            this.actions[n - 1] = temp;
+                        }
+                    }
+                });
+            });
+            this._stateManager.playerActions = this.actions;
             this._stateManager.gotoState(StateType.ResolveTurns);
         }
     }

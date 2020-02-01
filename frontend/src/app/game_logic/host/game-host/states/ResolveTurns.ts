@@ -1,6 +1,7 @@
 import { State } from './State';
 import { TextStyle, Text, Graphics, Container } from 'pixi.js';
-import { StateManager } from '../state-manager';
+import { StateManager, StateType } from '../state-manager';
+import { ActionType } from 'src/app/game_logic/card';
 
 export class ResolveTurns extends State
 {
@@ -30,13 +31,19 @@ export class ResolveTurns extends State
            .moveTo(window.innerWidth / 2, 50)
            .lineTo(window.innerWidth / 2, window.innerHeight - 50);
 
-        //get all actions that were played.
-        //sort the cards based on entity type.
-        
+        if (this._stateManager.numberOfPlayerActions > 0)
+        {
+            //handle the next action.
+        } else
+        {
+            //start new turn.
+            this._stateManager.gotoState(StateType.WaitingForInput);
+        }
     }
 
     public handle(delta: number): void
     {
         
+        this._stateManager.handlePlayerAction();
     }
 }

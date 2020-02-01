@@ -29,22 +29,26 @@ export class WaitingForPlayers extends State
     {
         this._stateManager.doGetRequest('http://localhost:9000/game/generate').subscribe((data) =>
         {
-            if (data['Hello world'])
-            {
-                this._text.text = 'Waiting for players...';
-                this._poller = setInterval(() => this.pollForPlayers(), 1500);
-            }            
+            this._text.text = 'Waiting for players...';
+            this._poller = setInterval(() => this.pollForPlayers(), 1500);          
+        }, () => 
+        {
+            //oops, there was already a game active.
+            this._text.text = 'Waiting for players...';
+            this._poller = setInterval(() => this.pollForPlayers(), 1500);
         });
     }
 
     private pollForPlayers(): void
     {
-        this._stateManager.doGetRequest('http://localhost:9000/game/player/count').subscribe((data) =>
+        this._stateManager.doGetRequest('http://localhost:9000/game/player').subscribe((data) =>
         {
-            const numberofplayers: number = data.Online;
+            const players = data.Players;
+            const numberofplayers: number = players.length;
             this._text.text = 'Waiting for players...\n' + numberofplayers + ' players connected.';
             if (numberofplayers === 4)
             {
+                this._stateManager.createPlayers(players);
                 this._stateManager.gotoState(StateType.ResolveTurns);
                 clearInterval(this._poller);
             }
