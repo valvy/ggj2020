@@ -14,7 +14,7 @@ export abstract class State
 
     public stateStarted(): void
     {
-
+        
     }
 
     public stateEnded(): void

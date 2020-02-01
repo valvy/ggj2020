@@ -1,6 +1,7 @@
 import { StateType } from './../state-manager';
 import { State } from './State';
 import { TextStyle, Text } from 'pixi.js'; 
+import { TextStyles } from 'src/app/textStyle';
 
 export class WaitingForInputs extends State
 {
@@ -18,23 +19,7 @@ export class WaitingForInputs extends State
         this._date = new Date();
         this._startTime = 10;
 
-        const style = new TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fontWeight: 'bold',
-            fill: ['#ffffff', '#00ff99'], // gradient
-            stroke: '#4a1850',
-            align : 'center',
-            strokeThickness: 5,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 440,
-        });
-        this._text = new Text('10.000', style);
+        this._text = new Text('10.000', TextStyles.style);
         this._text.anchor.set(0.5, 0.5);
         this._text.x = window.innerWidth / 2;
         this._text.y = window.innerHeight / 2;

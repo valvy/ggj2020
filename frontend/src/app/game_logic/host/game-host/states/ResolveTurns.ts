@@ -1,11 +1,17 @@
 import { State } from './State';
-import { TextStyle, Text, Graphics } from 'pixi.js';
+import { TextStyle, Text, Graphics, Container } from 'pixi.js';
+import { StateManager } from '../state-manager';
 
 export class ResolveTurns extends State
 {
     private _startTime: number;
     private _text: Text;
     private _date: Date;
+
+    public init(stateManager: StateManager, viewport: Container): void
+    {
+        super.init(stateManager, viewport);
+    }
 
     public stateStarted(): void
     {
@@ -23,6 +29,10 @@ export class ResolveTurns extends State
         myGraph.lineStyle(3, 0xffffff)
            .moveTo(window.innerWidth / 2, 50)
            .lineTo(window.innerWidth / 2, window.innerHeight - 50);
+
+        //get all actions that were played.
+        //sort the cards based on entity type.
+        
     }
 
     public handle(delta: number): void

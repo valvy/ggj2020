@@ -9,11 +9,13 @@ import { Container } from 'pixi.js';
 import { ResolveTurns } from './states/ResolveTurns';
 import { WaitingForPlayers } from './states/WaitingForPlayers';
 import { Observable } from 'rxjs';
+import { StartGameState } from './states/StartGameState';
 
 export enum StateType
 {
     WaitingForInput,
     WaitingForPlayers,
+    StartGame,
     ResolveTurns,
     ResolvingDefends,
     ResolvingAttacks,
@@ -32,6 +34,7 @@ export class StateManager
 
         this.states.set(StateType.WaitingForInput, new WaitingForInputs());
         this.states.set(StateType.WaitingForPlayers, new WaitingForPlayers());
+        this.states.set(StateType.StartGame, new StartGameState());
         this.states.set(StateType.ResolveTurns, new ResolveTurns());
         this.states.set(StateType.ResolvingDefends, new ResolveDefendsState());
         this.states.set(StateType.ResolvingAttacks, new ResolveAttacksState());

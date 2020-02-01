@@ -1,6 +1,6 @@
 import { State } from './State';
 
-export class StartGame extends State
+export class StartGameState extends State
 {
     public stateStarted(): void
     {
