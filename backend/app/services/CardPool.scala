@@ -7,20 +7,21 @@ object CardPool {
 
   private val logger: Logger = Logger(this.getClass())
 
+
+  val CREATE_TAG = "Create"
+  val DESTROY_TAG = "Destroy"
+  val SHIELD_TAG = "Shield"
+
   private val card_options = Array(
-    Card("Roof", "Create roof", "Create", 0),
-    Card("Roof", "Destroy roof", "Destroy", 1),
-    Card("Window", "Create Window", "Create",2),
-    Card("Window", "Destroy Window", "Destroy",3),
-    Card("Roof", "Shield roof", "Shield" ,4),
-    Card("Window", "Shield Window", "Shield",5)
-    /*
-      shield roof = 4
-      shield window = 5
-      create door = 6
-      destory door = 7
-      shield door 8
-     */
+    Card("Roof", "Create roof", CREATE_TAG, 0),
+    Card("Roof", "Destroy roof", DESTROY_TAG, 1),
+    Card("Window", "Create Window", CREATE_TAG,2),
+    Card("Window", "Destroy Window", DESTROY_TAG,3),
+    Card("Roof", "Shield roof", SHIELD_TAG ,4),
+    Card("Window", "Shield Window", SHIELD_TAG,5),
+    Card("Door", "Create Door", CREATE_TAG,6),
+    Card("Door", "Destroy Door", DESTROY_TAG,7),
+    Card("Door", "Shield Door", SHIELD_TAG,8)
   )
 
   private var currentCard = 0

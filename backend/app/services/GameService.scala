@@ -1,7 +1,7 @@
 package services
 import models._
 import scala.collection.mutable._
-import exceptions.GGJIllegalStateException
+import exceptions.{GGJIllegalStateException, GGJPlayerNotFoundException}
 import play.api.{Logger}
 import scala.util.Random
 
@@ -12,7 +12,8 @@ object GameState extends Enumeration {
 
 /**
   * @author Heiko van der Heijden.
-  *
+  * Service for managing the state of the game.
+  * Handling the players. their cards and effects.
   */
 object GameService {
 
@@ -37,9 +38,11 @@ object GameService {
   }
 
   def startGame = {
-    if(state != GameState.NoGame) {
-      throw new GGJIllegalStateException("Start game can only be called at start")
-    }
+    assertState(
+      state == GameState.NoGame,
+      "Start game can only be called at start"
+    )
+
     state = GameState.QRCode
   }
 
@@ -48,6 +51,10 @@ object GameService {
     state = GameState.NoGame
     logger.warn("Reset player count to zero")
     playerCount = 0
+    for(i <- 0 until players.length) {
+      players(i) = null
+    }
+
     CardPool.resetDeck
   }
 
@@ -68,14 +75,14 @@ object GameService {
                 isSafed = true
                 // remove item from the effects.
                 victim.effects.remove(j)
-                logger.warn(s"the victim of ${playCard.description} was ${victim.id} and lost a effect")
+                logger.info(s"the victim of ${playCard.description} was ${victim.id} and lost a effect")
               }
             }
 
             if(!isSafed) {
               victim.playedCards.remove(i)
               isDone = true
-              logger.warn(s"the victim of ${playCard.description} was ${victim.id} and lost the element")
+              logger.info(s"the victim of ${playCard.description} was ${victim.id} and lost the element")
             }
 
           }
@@ -88,49 +95,59 @@ object GameService {
 
   }
 
+  /**
+    * Throw an exception when it currently is in an invalid state.
+    * @param as the condition
+    * @param errorMsg message in the exception
+    */
+  private def assertState(as : Boolean, errorMsg : String) {
+    if(!as) {
+      throw new GGJIllegalStateException(errorMsg)
+    }
 
+  }
+
+  def getIndexOfCard(player : Player, card : Int): Int = {
+    var result = -1
+    for(i <- 0 until player.holding.length) {
+      if(player.holding(i).id == card) {
+        result = i
+      }
+    }
+    result
+  }
 
 
   def playCard(id : Int, playCard : Int, discardCard : Int) : Player = {
-
-    if(state != GameState.Turn) {
-      throw new GGJIllegalStateException("You can't play a card right now.")
-    }
-
+    assertState(state == GameState.Turn,"You can't play a card right now.")
 
     val player = players(id)
-    var discardIndex = -1
-    var playIndex = -1
-
-    // check if the cards the player is doing exists.
-    for (i <- 0 until player.holding.length) {
-      if(player.holding(i).id == discardCard) {
-          discardIndex = i
-       //   typeOfPlayCard = player.holding(i)
-      } else if(player.holding(i).id == playCard) {
-        playIndex = i
-      }
-    }
+    val discardIndex = getIndexOfCard(player,discardCard)
+    val playIndex = getIndexOfCard(player,playCard)
 
     // put the playcard into the holding.
     if(playIndex != -1) {
 
+
       val typeOfPlayCard = player.holding(playIndex)
 
+      logger.info(s"Player ${id} has played ${typeOfPlayCard.description}")
       player.lastCards +=  player.holding(playIndex)
+      // Make sure the lastCards is never more then 10
+      if(player.lastCards.length > 10) {
+        player.lastCards.remove(0)
+      }
+
+
       // check if its a destroyable.
-      if(typeOfPlayCard.effect.equals("Destroy")) {
+      if(typeOfPlayCard.effect.equals(CardPool.DESTROY_TAG)) {
         executeDestroyCard(player, typeOfPlayCard)
       }
       // Its a create card.
-      else if (typeOfPlayCard.effect.equals("Create")) {
-        val amountPlayedOfType = player.playedCards.count(x => {
-          x.id == playCard
-        })
+      else if (typeOfPlayCard.effect.equals(CardPool.CREATE_TAG)) {
+        val amountPlayedOfType = player.playedCards.count(x => {x.id == playCard })
 
-        val amountOfRequiredType = player.mustMake.count(x => {
-          x.id == playCard
-        })
+        val amountOfRequiredType = player.mustMake.count(x => {x.id == playCard })
 
         if (amountOfRequiredType != amountPlayedOfType) {
           player.playedCards += player.holding(playIndex)
@@ -139,11 +156,18 @@ object GameService {
         }
       }
         // Check if
-      else if(typeOfPlayCard.effect.equals("Shield")) {
+      else if(typeOfPlayCard.effect.equals(CardPool.SHIELD_TAG)) {
         // Check if there is already a shield
-        val dat = player.effects.find(x => typeOfPlayCard.effect == x)
-        if(dat == None) {
+        val existsInEffects = player.effects.find(x => typeOfPlayCard.id == x.id)
+
+        // Its only possible to do the shield when you have it build
+        val haveTheItem = player.playedCards.find(x => typeOfPlayCard.name == x.name )
+
+        if(existsInEffects == None && haveTheItem != None) {
           player.effects += typeOfPlayCard
+        }
+        if(haveTheItem == None) {
+          logger.info(s"Player ${id} has casted ${typeOfPlayCard.description} but he did not repair it first and so it is ignored")
         }
 
       } else {
@@ -152,16 +176,22 @@ object GameService {
       }
       // set a new card on that index.
       player.holding(playIndex) = CardPool.getCard
+    } else {
+      logger.info(s"Player ${id} has casted ${playCard}, the player did not own it and thus was ignored")
     }
 
     if(discardIndex != -1) {
+      logger.info(s"Player ${id} has discarderd ${player.holding(discardIndex).description}")
       player.holding(discardIndex) = CardPool.getCard
+    } else {
+      logger.info(s"Player ${id} has discarded an card it did not own.. (${discardCard})")
     }
 
     /**
       * Check for winning condition
       */
-    if(player.holding.length == player.mustMake.length) {
+    if(player.playedCards.length == player.mustMake.length) {
+      logger.info(s"Player ${id} has won!!")
       winnerAndOver = new Game(true, player.id)
       state = GameState.Over
     }
@@ -174,6 +204,7 @@ object GameService {
 
   def joinPlayer : Int = {
     if(state == GameState.QRCode) {
+
       players(playerCount) = new Player(
         playerCount,
         Array(CardPool.getCard, CardPool.getCard, CardPool.getCard),
@@ -184,6 +215,7 @@ object GameService {
         new ArrayBuffer()
       )
 
+      logger.info(s"Player with id ${players(playerCount).id} has joined.")
       val oldValue = playerCount
       playerCount += 1
 
@@ -202,6 +234,9 @@ object GameService {
   }
 
   def getPlayer(id : Int): Player = {
+    if(players(id)== null) {
+      throw new GGJPlayerNotFoundException("Could not find the player")
+    }
     players(id)
   }
 

@@ -9,11 +9,11 @@ import services.GameService
 import models.ServerError
 import scala.concurrent._
 import java.net.HttpURLConnection
-import exceptions.GGJIllegalStateException
-
+import exceptions.{GGJIllegalStateException,GGJPlayerNotFoundException}
 /**
   * This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
+  * @author Heiko van der Heijden
   */
 @Singleton
 class GameController @Inject()(
@@ -69,11 +69,14 @@ class GameController @Inject()(
     * @return
     */
   def getPlayerState(id: Int) = Action { implicit request: Request[AnyContent] =>
-
-    if(id >= GameService.MAX_PLAYER_COUNT) {
-      NotFound(Json.toJson(ServerError(HttpURLConnection.HTTP_NOT_FOUND,"This id does not exists")))
-    } else {
-      Ok(Json.obj("PlayerInfo" -> GameService.getPlayer(id)))
+    try {
+      if (id >= GameService.MAX_PLAYER_COUNT) {
+        NotFound(Json.toJson(ServerError(HttpURLConnection.HTTP_NOT_FOUND, "This id does not exists")))
+      } else {
+        Ok(Json.obj("PlayerInfo" -> GameService.getPlayer(id)))
+      }
+    } catch{
+      case e : GGJPlayerNotFoundException => NotFound(Json.toJson(ServerError(HttpURLConnection.HTTP_NOT_FOUND, e.getMessage)))
     }
   }
 
@@ -96,12 +99,18 @@ class GameController @Inject()(
     Ok(Json.obj("action" -> "Reset succesfull"))
   }
 
+  /**
+    * Used to set the state of the player.
+    * This method is called
+    * @param id
+    * @return
+    */
   def setPlayerState(id : Int) = Action { implicit request: Request[AnyContent] =>
     val data = request.body.asJson
     try{
       Ok(Json.toJson( GameService.playCard(id, data.get("play").as[JsNumber].value.toInt, data.get("discard").as[JsNumber].value.toInt)))
     } catch {
-      case e : NoSuchElementException => BadRequest(Json.toJson(ServerError( HttpURLConnection.HTTP_BAD_REQUEST,"Missing play or discard fields")))
+      case e : NoSuchElementException => BadRequest(Json.toJson(ServerError(HttpURLConnection.HTTP_BAD_REQUEST,"Missing play or discard fields")))
       case e: GGJIllegalStateException =>BadRequest(Json.toJson(ServerError(HttpURLConnection.HTTP_BAD_REQUEST, e.getMessage)))
 
     }
