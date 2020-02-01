@@ -1,8 +1,11 @@
+
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { GameLoaderService } from '../../../services/game-loader.service';
 import { Injectable } from '@angular/core';
 import { FileLoader } from '../../fileloader';
 import { Texture, Sprite, Container, Text, Loader, Point, TextStyle } from 'pixi.js';
 import { Card, ActionType, EntityType } from '../../card';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +23,30 @@ export class GameManagerClientService
     private styleTxtTitle:TextStyle;
     private styleTxtHelp:TextStyle;
 
+    private playerName:String;
+    private playerId:String;
+    private currentCardA:String;
+    private currentCardB:String;
+    private currentCardC:String;
 
+/* Server Card Data - backend/CardPool.scale
+    private val card_options = Array(
+        "Create Roof",
+        "Destroy Roof",
+        "Create Window",
+        "Destroy Window"
+      )
+*/
 
-    constructor(private gameLoader: GameLoaderService) 
+/*
+Server GET/POST urls
+    http://localhost:9000/game/generate
+    http://localhost:9000/game/join
+    http://localhost:9000/game/player/0     get / post 
+    http://localhost:9000/game              get / delete
+*/
+
+    constructor(private gameLoader: GameLoaderService, private httpRequest: HttpClient) 
     {
         this.init();
     }
@@ -93,10 +117,24 @@ export class GameManagerClientService
             wordWrapWidth: 440,
         });        
 
+        this.generatePlayerName();
     }
+
+    private generatePlayerName(): void{
+
+        var namesFirst = ["Bewilderd", "Hearless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke"];
+        var namesSecond = ["Overlord", "Warmonger", "Capatalist", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie"];
+
+        let first = Math.floor(Math.random() * namesFirst.length) + 1;
+        let second = Math.floor(Math.random() * namesSecond.length) + 1;
+
+        Math.floor(Math.random()*10) + 1
+        this.playerName = namesFirst[first]+" "+namesSecond[second];
+    }
+
     private AddHelpText() : void
     {
-        const textTitle = new Text('Your hand', this.styleTxtTitle);
+        const textTitle = new Text(this.playerName+"s' cards", this.styleTxtTitle);
         textTitle.anchor.set(0.5, 0.5);
         textTitle.x = (window.innerWidth / 2);
         textTitle.y = 28;
@@ -178,9 +216,24 @@ export class GameManagerClientService
         this.gameLoader.addGameLoopTicker(this.updateCycle.bind(this));        
     }
 
+    private NewHand():void{
+        this.doGetRequest().subscribe((data) =>
+        {
+            
+        });
+    }
+
     private updateCycle(delta: number): void
     {
 
+    }
+
+    public doGetRequest(): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        headers.append('Access-Control-Allow-Origin', '*');
+        headers.append('Content-Type', 'application/json');
+        return this.httpRequest.get('localhost:9000/game/player/count', {headers: headers});
     }
 
 }

@@ -1,6 +1,7 @@
 import { State } from './State';
 import { TextStyle, Text } from 'pixi.js';
 import { StateType } from '../state-manager';
+import { HttpClient } from '@angular/common/http';
 
 export class WaitingForPlayers extends State
 {

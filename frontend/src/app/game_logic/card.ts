@@ -154,7 +154,6 @@ export class Card extends Sprite
 
     private snapCardToSeletionArea() : void
     {
-
         let widthPartialSize = (window.innerWidth / 4);
         let leftSide = widthPartialSize * 1;
         let middleSide = window.innerWidth / 2;
