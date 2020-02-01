@@ -1,13 +1,13 @@
-import { GameLoaderService } from './game-loader.service';
+import { GameLoaderService } from '../../../services/game-loader.service';
 import { Injectable } from '@angular/core';
-import { FileLoader } from '../game_logic/fileloader';
+import { FileLoader } from '../../fileloader';
 import { Texture, Sprite, Container, Text, Loader, Point } from 'pixi.js';
-import { Card, ActionType, EntityType } from '../game_logic/card';
+import { Card, ActionType, EntityType } from '../../card';
 
 @Injectable({
   providedIn: 'root'
 })
-export class GameManagerService 
+export class GameManagerClientService 
 {
     private viewport: Container;
     private fileLoader: FileLoader;

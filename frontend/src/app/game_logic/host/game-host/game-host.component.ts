@@ -1,20 +1,20 @@
-import { GameManagerClientService } from './game-manager-client.service';
+import { GameManagerHostService } from './game-manager-host.service';
 import { Vector } from 'vector2d';
 import { GameLoaderService } from '../../../services/game-loader.service';
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
-  selector: 'app-client-game',
-  templateUrl: './game-client.component.html',
-  styleUrls: ['./game-client.component.scss']
+  selector: 'app-game',
+  templateUrl: './game-host.component.html',
+  styleUrls: ['./game-host.component.scss']
 })
-export class GameClientComponent implements AfterViewInit
+export class GameHostComponent implements AfterViewInit
 {    
     @ViewChild('pixiContainer', {static: false}) pixiContainer: ElementRef;
     @ViewChild('uiContainer', {static: false}) uiContainer: ElementRef;
 
     private interactionStart: Vector;
-    constructor(private gameLoader: GameLoaderService, private gameManager: GameManagerClientService) { }
+    constructor(private gameLoader: GameLoaderService, private gameManager: GameManagerHostService) { }
 
     ngAfterViewInit()
     {        

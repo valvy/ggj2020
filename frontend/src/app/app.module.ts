@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { GGJ2020Service } from './services/ggj2020.service';
 
-import { GameHostComponent } from './game_logic/host/game-host/game.component';
+import { GameHostComponent } from './game_logic/host/game-host/game-host.component';
 import { UiHostComponent } from './game_logic/host/ui-host/ui.component';
 
 import { GameClientComponent } from './game_logic/client/game-client/game-client.component';
