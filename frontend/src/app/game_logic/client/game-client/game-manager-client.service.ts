@@ -358,14 +358,15 @@ export class GameManagerClientService
             // configure the card so it displays the cards holding in player hand
             card.init(  Card.GetActionTypeByCardID(cardValue), 
                         Card.GetEnityTypeByCardID(cardValue), 
-                        height);
+                        height,
+                        cardValue);
 
             /*card.init(
                 ActionType[Object.keys(ActionType)[randomAction]], 
                 EntityType[Object.keys(EntityType)[randomEntity]], height);*/
 
             const actualHeight = card.actualHeight;
-            
+
             let positionHeight = (actualHeight / 2) + (i * 25) + 25 + i * actualHeight;
             card.createCard(new Point(window.innerWidth / 2, positionHeight));
 
@@ -537,6 +538,9 @@ export class GameManagerClientService
 
     public doPostPlayerChosenCards(): Observable<any>
     {
+        // do some verification around the cards
+        this.verifyAndSetSelectedCards();
+
         const headers: HttpHeaders = new HttpHeaders();
         //headers.append('Access-Control-Allow-Origin', '*');
         //headers.append('Content-Type', 'application/json');
@@ -549,4 +553,82 @@ export class GameManagerClientService
         //{headers: headers});
     }
 
+
+    public verifyAndSetSelectedCards(): void
+    {
+        // first find out if any of the cards has been selected
+        if (this.currentCardUIA.getIsDiscarded){
+            this.currentCardDiscard = this.currentCardUIA.actualCardID;
+        }else if(this.currentCardUIB.getIsDiscarded){
+            this.currentCardDiscard = this.currentCardUIB.actualCardID;
+        }else if (this.currentCardUIC.getIsDiscarded){
+            this.currentCardDiscard = this.currentCardUIC.actualCardID;
+        }
+        
+        if(this.currentCardUIA.getIsPlayed){
+            this.currentCardPlay = this.currentCardUIA.actualCardID;            
+        }else if (this.currentCardUIB.getIsPlayed){
+            this.currentCardPlay = this.currentCardUIB.actualCardID; 
+        }else if(this.currentCardUIC.getIsPlayed){
+            this.currentCardPlay = this.currentCardUIC.actualCardID;             
+        }
+
+        // if any of the play actions hasn't been done... random fill it.
+        if (this.currentCardPlay < 0 && this.currentCardDiscard < 0){
+            
+            let randSelectedCard1 = this.currentCardHoldingA;
+            let randSelectedCard2 = this.currentCardHoldingB;
+            let randSelectedCard3 = this.currentCardHoldingC;
+
+            if ( Math.random() > 0.33 ){
+                let temp = randSelectedCard1;
+                randSelectedCard1 = randSelectedCard2;
+                randSelectedCard2 = temp;
+            }
+            if ( Math.random() > 0.33 ){
+                let temp = randSelectedCard2;
+                randSelectedCard2 = randSelectedCard3;
+                randSelectedCard3 = temp;
+            }
+            if ( Math.random() > 0.33 ){
+                let temp = randSelectedCard3;
+                randSelectedCard3 = randSelectedCard1;
+                randSelectedCard1 = temp;
+            }                        
+
+            // just take first two cards, now that they have been randomly ordered
+            this.currentCardPlay = randSelectedCard1;
+            this.currentCardDiscard = randSelectedCard3;
+
+        }
+        else if (this.currentCardPlay < 0){
+            let randSelectedCard1 = this.currentCardHoldingA;
+            let randSelectedCard2 = this.currentCardHoldingB;
+            if (this.currentCardHoldingA == this.currentCardDiscard){
+                randSelectedCard1 = this.currentCardHoldingB;
+                randSelectedCard2 = this.currentCardHoldingC;
+            }else if (this.currentCardHoldingB == this.currentCardDiscard){
+                randSelectedCard1 = this.currentCardHoldingA;
+                randSelectedCard2 = this.currentCardHoldingC;
+            }
+            this.currentCardPlay = randSelectedCard1;
+            if ( Math.random() > 0.5 ){
+                this.currentCardPlay = randSelectedCard2;
+            } 
+        }else if (this.currentCardDiscard < 0){
+            let randSelectedCard1 = this.currentCardHoldingA;
+            let randSelectedCard2 = this.currentCardHoldingB;
+            if (this.currentCardHoldingA == this.currentCardPlay){
+                randSelectedCard1 = this.currentCardHoldingB;
+                randSelectedCard2 = this.currentCardHoldingC;
+            }else if (this.currentCardHoldingB == this.currentCardPlay){
+                randSelectedCard1 = this.currentCardHoldingA;
+                randSelectedCard2 = this.currentCardHoldingC;
+            }
+            this.currentCardDiscard = randSelectedCard1;
+            if ( Math.random() > 0.5 ){
+                this.currentCardDiscard = randSelectedCard2;
+            } 
+        }
+    }
 }

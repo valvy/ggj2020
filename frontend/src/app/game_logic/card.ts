@@ -27,6 +27,10 @@ export class Card extends Sprite
     private startDragHorizontal: number;
     private _size: number;
 
+    private cardID:number;  // card if recieved from server and goes back to server.... should macth Host en Server codes
+    private isPlayed:boolean;
+    private isDiscarded:boolean;
+
 
     // STATIC CARD CODES - MAPPED WITH SERVER BACKEND AND WITH HOST-OUTPUT
     // Note when modifying these make sure the match server and host-output
@@ -76,6 +80,21 @@ export class Card extends Sprite
         }
     }
 
+    public get getIsDiscarded(): boolean
+    {
+        return this.isDiscarded;
+    }
+    
+    public get getIsPlayed(): boolean
+    {
+        return this.isPlayed;
+    }
+
+    public get actualCardID(): number
+    {
+        return this.cardID;
+    }
+
     public get actualHeight(): number
     {
         return this._size * this.height;
@@ -95,14 +114,18 @@ export class Card extends Sprite
         this.buttonMode = true;
     }
 
-    public init(action: ActionType, entity: EntityType, height: number): void
+    public init(action: ActionType, entity: EntityType, height: number, cardID:number): void
     {
+        this.cardID = cardID;
         this.actionType = action;
         this.entityType = entity;
         this.actionTexture = this.textures.get('assets/cards/' + action + '.png');
         this.entityTexture = this.textures.get('assets/cards/' + entity + '.png');
         this.texture = this.cardTexture;
         this._size = (height / this.height);
+
+        this.isPlayed = false;
+        this.isDiscarded = false;
 
         this.    // events for drag start
         on('mousedown', this.onDragStart)
@@ -209,12 +232,21 @@ export class Card extends Sprite
 
         //console.log("position "+this.position.x+" this.actualWidth  "+this.actualWidth+" leftSide"+leftSide  );
 
+        // reset selected state
+        this.isPlayed = false;
+        this.isDiscarded = false;
+
+        // actually snap to a side or back to middle
         if ( this.position.x < leftSide + (this.actualWidth / 2) ){
             this.position.x = leftSide;
+            this.isDiscarded = true;
         }else if(this.position.x > rightSide - (this.actualWidth / 2) ){
             this.position.x = rightSide;
+            this.isPlayed = true;
         }else{
             this.position.x = middleSide;
         }
+
+        // TODO if another card has already been put on selcted or discared reset the other card.
     }
 }
