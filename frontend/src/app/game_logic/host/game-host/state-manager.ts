@@ -55,14 +55,14 @@ export class StateManager
         this.currentState.stateStarted();
     }
 
-    public doGetRequest(): Observable<any>
+    public doGetRequest(url: string): Observable<any>
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
 
         
         headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('http://localhost:9000/game/player/count', {headers: headers});
+        return this.httpRequest.get(url, {headers: headers});
     }
 
     public gameTick(delta: number): void
