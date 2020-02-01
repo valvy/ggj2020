@@ -41,18 +41,22 @@ export class WaitingForPlayers extends State
 
     private pollForPlayers(): void
     {
-        this._stateManager.doGetRequest('http://localhost:9000/game/player').subscribe((data) =>
+        this._stateManager.doGetRequest('http://localhost:9000/game/player/count').subscribe((data) =>
         {
-            const players = data.Players;
-            const numberofplayers: number = players.length;
+            const numberofplayers: number = data.Online;
             this._text.text = 'Waiting for players...\n' + numberofplayers + ' players connected.';
             if (numberofplayers === 4)
             {
-                this._stateManager.createPlayers(players);
-                this._stateManager.gotoState(StateType.ResolveTurns);
-                clearInterval(this._poller);
+                this._stateManager.doGetRequest('http://localhost:9000/game/player').subscribe((data) =>
+                {
+                    const players = data.Players;            
+            
+                    this._stateManager.createPlayers(players);
+                    this._stateManager.gotoState(StateType.ResolveTurns);
+                    clearInterval(this._poller);
+                });
             }
-        });
+        });        
     }
 
     public stateEnded(): void
