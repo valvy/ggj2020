@@ -87,6 +87,8 @@ export class StateManager
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
+
+        
         headers.append('Content-Type', 'application/json');
         return this.httpRequest.get(url, {headers: headers});
     }

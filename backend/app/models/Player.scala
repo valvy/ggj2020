@@ -6,7 +6,7 @@ import scala.collection.mutable._
 
 
 
-case class Card(name : String)
+case class Card(name : String, description : String, effect: String, id : Int)
 
 
 
@@ -16,9 +16,12 @@ object Card {
 }
 
 case class Player(id: Int,
-                  holding : Array[Card],
+                  var holding : Array[Card],
                   playedCards: ArrayBuffer[Card],
-                  mustMake: Array[Card]
+                  mustMake: Array[Card],
+                  effects: ArrayBuffer[Card],
+                  var round: Int,
+                  var lastCards : ArrayBuffer[Card]
                  )
 
 

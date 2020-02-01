@@ -1,5 +1,6 @@
 name := """ggj2020-backend"""
-organization := "com.example"
+organization := "nl.hva"
+maintainer := "heikovdheijden@hotmail.com"
 
 version := "1.0-SNAPSHOT"
 

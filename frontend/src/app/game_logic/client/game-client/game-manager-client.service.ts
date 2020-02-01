@@ -24,14 +24,36 @@ export class GameManagerClientService
     private styleTxtPlay:TextStyle;
     private styleTxtTitle:TextStyle;
     private styleTxtHelp:TextStyle;
+    private textHelp:Text;
 
     private playerName:String;
-    private playerId:any;
-    private currentCardA:String;
-    private currentCardB:String;
-    private currentCardC:String;
+    private playerId:number = -1;
+    private currentCardHoldingA:number;
+    private currentCardHoldingB:number;
+    private currentCardHoldingC:number;
+    private currentCardUIA:Card;
+    private currentCardUIB:Card;
+    private currentCardUIC:Card;
 
-/* Server Card Data - backend/CardPool.scale
+    private currentCardPlay:any;
+    private currentCardDiscard:any;
+
+    private INITIAL_START_SELECT_TIME: number = 10;     // same time as server/game-host player select cards time.
+    private INITIAL_START_RESOLVE_TIME: number = 20;    // same time as game-host resolve time
+    private INITIAL_POLL_LOBBY_TIME: number = 2;        // 2 seconds, very short
+    private _currentTimeDelay: number;
+    private _date: Date;
+    
+    private STATE_WAITING_LOBBY:number = 0;
+    private STATE_WAITING_FOR_HOST:number = 2;
+    private STATE_SELECT_CARDS:number = 3;
+    private STATE_RESOLVE_TURN:number = 4;
+    private currentState:number = -1;
+    private bPollingForPlayerCount:boolean = false;
+
+
+/* 
+    Server Card Data - backend/CardPool.scale
     private val card_options = Array(
         "Create Roof",
         "Destroy Roof",
@@ -40,12 +62,14 @@ export class GameManagerClientService
       )
 */
 
+
 /*
-Server GET/POST urls
+    Server GET/POST urls
     http://localhost:9000/game/generate
     http://localhost:9000/game/join         get -> return ID
     http://localhost:9000/game/player/0     get / post 
     http://localhost:9000/game              get / delete
+    http://localhost:9000/game/player/count get player count online/joined the game.
 */
 
 
@@ -55,6 +79,19 @@ Server GET/POST urls
     }
 
     private init(): void{
+
+        // Set initial state
+        this.currentState = this.STATE_WAITING_LOBBY;
+        this._currentTimeDelay = this.INITIAL_POLL_LOBBY_TIME;
+
+        // reset cards to unused
+        this.currentCardHoldingA = -1;
+        this.currentCardHoldingB = -1;
+        this.currentCardHoldingC = -1;
+
+        this.currentCardPlay = -1;
+        this.currentCardDiscard = -1;
+
         this.styleTxtTitle = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 28,
@@ -142,12 +179,12 @@ Server GET/POST urls
 
         this.viewport.addChild(textTitle);
 
-        const textHelp = new Text('Play 1 card and Discard 1 card', this.styleTxtHelp);
-        textHelp.anchor.set(0.5, 0.5);
-        textHelp.x = (window.innerWidth / 2);
-        textHelp.y = window.innerHeight - 16;
+        this.textHelp = new Text('Play 1 card and Discard 1 card', this.styleTxtHelp);
+        this.textHelp.anchor.set(0.5, 0.5);
+        this.textHelp.x = (window.innerWidth / 2);
+        this.textHelp.y = window.innerHeight - 16;
 
-        this.viewport.addChild(textHelp);
+        this.viewport.addChild(this.textHelp);
     }
 
     private AddCardText(height:any) : void
@@ -184,6 +221,8 @@ Server GET/POST urls
 
     public startGame(): void
     {
+        this._date = new Date();
+
         this.viewport = this.gameLoader.pixi.stage;
         this.fileLoader = this.gameLoader.fileLoader;
         this.textures = this.fileLoader.getTextures([
@@ -226,7 +265,59 @@ Server GET/POST urls
 
     private updateCycle(delta: number): void
     {
+        const now = new Date();
+        const timeDiffSinceStartOfState = now.getTime() - this._date.getTime();
+        let timeLeft = this._currentTimeDelay - timeDiffSinceStartOfState / 1000;
+        if (timeLeft <= 0 && this.currentState == this.STATE_SELECT_CARDS)
+        {
+            timeLeft = 0;
+            this.ClearCardsUI();
+            this.doPostPlayerChosenCards();
+            this._date = now;   // use now as new date time to caulcate the new timeDiff
+            // Set the host resolve state the client is in
+            this.currentState = this.STATE_RESOLVE_TURN;
+            this._currentTimeDelay = this.INITIAL_START_RESOLVE_TIME;
 
+        }else if (timeLeft <= 0 && this.currentState == this.STATE_RESOLVE_TURN)
+        {
+            this.GetNewHandOfCards();
+            // Set the host resolve state the client is in
+            this.currentState = this.STATE_SELECT_CARDS;
+            this._currentTimeDelay = this.INITIAL_START_SELECT_TIME;
+        }else if(timeLeft <= 0 && this.currentState == this.STATE_WAITING_LOBBY){   
+            // if there is no player ID, the player itself failed in joining the game
+            // since the server did not return a value yet or not at all. 
+            if (this.playerId > -1 && !this.bPollingForPlayerCount){
+                // If we have a player ID we need to wait for the other players                
+                this.getPollPlayerCount();
+            }         
+            this._currentTimeDelay = this.INITIAL_POLL_LOBBY_TIME;
+        }
+
+        // update text
+        // NOTE: it includes some debug text at the moment
+        if (this.textHelp != null){
+            this.textHelp.text = 'Play 1 card and Discard 1 card... Time:' + timeLeft.toFixed(3)+" STATE: " + this.currentState;
+        }        
+    }
+
+    private ClearCardsUI():void
+    {
+        if (this.currentCardUIA){
+            this.viewport.removeChild(this.currentCardUIA);
+            this.currentCardUIA.destroy();
+            this.currentCardUIA = null;
+        } 
+        if (this.currentCardUIB){
+            this.viewport.removeChild(this.currentCardUIB);
+            this.currentCardUIB.destroy();
+            this.currentCardUIB = null;
+        } 
+        if (this.currentCardUIC){
+            this.viewport.removeChild(this.currentCardUIC);
+            this.currentCardUIC.destroy();
+            this.currentCardUIC = null;
+        }                 
     }
 
     private showUI():void
@@ -238,9 +329,28 @@ Server GET/POST urls
             const randomEntity = Math.floor(Math.random() * 3);
 
             const height: number = (window.innerHeight - 100) / 3;
-            card.init(
+
+            // determine the right current card
+            let cardValue = -1;
+            if (i==0) {
+                cardValue = this.currentCardHoldingA;
+                this.currentCardUIA = card;
+            }else if (i==1) {
+                cardValue = this.currentCardHoldingB;
+                this.currentCardUIB = card;
+            }else if (i==2) {
+                cardValue = this.currentCardHoldingC;
+                this.currentCardUIC = card;
+            }
+
+            // configure the card so it displays the cards holding in player hand
+            card.init(  Card.GetActionTypeByCardID(cardValue), 
+                        Card.GetEnityTypeByCardID(cardValue), 
+                        height);
+
+            /*card.init(
                 ActionType[Object.keys(ActionType)[randomAction]], 
-                EntityType[Object.keys(EntityType)[randomEntity]], height);
+                EntityType[Object.keys(EntityType)[randomEntity]], height);*/
 
             const actualHeight = card.actualHeight;
             
@@ -254,6 +364,37 @@ Server GET/POST urls
         
         this.AddHelpText();
     }
+
+    /*
+    Version of 1 feb 2020 om 17:08
+    {"PlayerInfo":{"id":0,
+    "holding":[{"name":"Window","description":"Destroy Window","effect":"Destroy","id":3},
+                {"name":"Window","description":"Destroy Window","effect":"Destroy","id":3},
+                {"name":"Roof","description":"Create roof","effect":"Create","id":0}]
+    ,"playedCards":[],"mustMake":[{"name":"Roof","description":"Create roof","effect":"Create","id":0},
+                {"name":"Window","description":"Create Window","effect":"Create","id":2}]
+    ,"effects":[],"round":0,"lastCards":[]}}
+    */
+    private processPlayerHoldingCards(holding:any): void
+    {
+        console.log("Player "+this.playerId+" Holding: "+holding); 
+        /*for (let i: number = 0; i < holding.length; i++)
+        {
+            console.log("Holding data "+this.playerId+" element: "+ i +" = "+holding[i]);            
+        }*/
+        
+        /*this.CreateCardFromServerData(holding, 0);
+        this.CreateCardFromServerData(holding, 1);
+        this.CreateCardFromServerData(holding, 2);*/
+        this.currentCardHoldingA = holding[0]['id'];
+        this.currentCardHoldingB = holding[1]['id'];
+        this.currentCardHoldingC = holding[2]['id'];
+    }
+
+    /*private CreateCardFromServerData(holding:any, id:any): void
+    {
+        let cardID = holding[id]['id'];
+    }*/
 
     private GenerateNewGame():void{
         this.doGetRequestStartAndGenerateServerGame().subscribe((data) =>
@@ -272,10 +413,10 @@ Server GET/POST urls
         {
             if (data['id'])
             {
+                // Store the given playerID
                 this.playerId = data['id'];          
-
+                // generate a new player name
                 this.generatePlayerName(); 
-                this.NewHandOfCards(); 
             }else{
                 // error
 
@@ -283,12 +424,54 @@ Server GET/POST urls
         });
     }
 
-    private NewHandOfCards():void{
+    private getPollPlayerCount():void{
+        this.bPollingForPlayerCount = true;
+        this.doGetRequestGetPlayerCount().subscribe((data) =>
+        {
+            if (data['online'])
+            {
+                if (data['online'] >= 4 && this.currentState == this.STATE_WAITING_LOBBY){
+                    // set in between host, so it stops polling and will wait for first hand data.
+                    this.currentState == this.STATE_WAITING_FOR_HOST;
+                    // continue with game
+                    // by getting a set of cards for the player and entering the select card state
+                    this.GetNewHandOfCards(); 
+                    this.bPollingForPlayerCount = false;
+                }else{
+                    // not enough player yet...wait and try again later.
+                    this.bPollingForPlayerCount = false;
+                }
+            }else{
+                // error
+            }            
+        });
+    }    
+
+    private GetNewHandOfCards():void{
+
+        // reset cards to unused
+        this.currentCardHoldingA = -1;
+        this.currentCardHoldingB = -1;
+        this.currentCardHoldingC = -1;
+
+        this.currentCardPlay = -1;
+        this.currentCardDiscard = -1;
+
         this.doGetRequestGetPlayerCard().subscribe((data) =>
         {
             if (data['PlayerInfo'])
             {
-                this.showUI();             
+                // Read hand data and convert to client cards
+                this.processPlayerHoldingCards(data['PlayerInfo']['holding']);                
+
+                // Show new hand
+                this.showUI();   
+                
+                // restart round time
+                this._currentTimeDelay = this.INITIAL_START_SELECT_TIME;
+
+                // Set the player select card state the client is in
+                this.currentState = this.STATE_SELECT_CARDS;
             }else{
                 // error
             }
@@ -311,12 +494,34 @@ Server GET/POST urls
         return this.httpRequest.get('http://localhost:9000/game/join', {headers: headers});
     }
 
+    public doGetRequestGetPlayerCount(): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        headers.append('Access-Control-Allow-Origin', '*');
+        headers.append('Content-Type', 'application/json');
+        return this.httpRequest.get('http://localhost:9000/game/player/count', {headers: headers});
+    }
+
     public doGetRequestGetPlayerCard(): Observable<any>
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
         headers.append('Content-Type', 'application/json');
         return this.httpRequest.get('http://localhost:9000/game/player/'+this.playerId, {headers: headers});
+    }
+
+    public doPostPlayerChosenCards(): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        //headers.append('Access-Control-Allow-Origin', '*');
+        //headers.append('Content-Type', 'application/json');
+        return this.httpRequest.post('http://localhost:9000/game/player/'+this.playerId, 
+        {
+            id:this.playerId,
+            play:this.currentCardPlay,
+            discard:this.currentCardDiscard
+        });
+        //{headers: headers});
     }
 
 }
