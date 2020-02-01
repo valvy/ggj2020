@@ -80,9 +80,6 @@ export class GameManagerClientService
 
     private init(): void{
 
-        // Set initial state
-        this.currentState = this.STATE_WAITING_LOBBY;
-        this._currentTimeDelay = this.INITIAL_POLL_LOBBY_TIME;
 
         // reset cards to unused
         this.currentCardHoldingA = -1;
@@ -254,6 +251,8 @@ export class GameManagerClientService
         // sprite.on('tap', onClick); // touch-only
         
         this.viewport.addChild(this.btnStartGame); 
+
+        console.log("GAME STARTED");
     }
 
     private onClick(e) : void {
@@ -268,8 +267,10 @@ export class GameManagerClientService
         const now = new Date();
         const timeDiffSinceStartOfState = now.getTime() - this._date.getTime();
         let timeLeft = this._currentTimeDelay - timeDiffSinceStartOfState / 1000;
+        //console.log("timeLeft "+timeLeft);
         if (timeLeft <= 0 && this.currentState == this.STATE_SELECT_CARDS)
         {
+            console.log("STATE STATE_SELECT_CARDS"+this.currentState);
             timeLeft = 0;
             this.ClearCardsUI();
             this.doPostPlayerChosenCards();
@@ -280,14 +281,18 @@ export class GameManagerClientService
 
         }else if (timeLeft <= 0 && this.currentState == this.STATE_RESOLVE_TURN)
         {
+            console.log("STATE STATE_RESOLVE_TURN "+this.currentState);
             this.GetNewHandOfCards();
             // Set the host resolve state the client is in
             this.currentState = this.STATE_SELECT_CARDS;
             this._currentTimeDelay = this.INITIAL_START_SELECT_TIME;
         }else if(timeLeft <= 0 && this.currentState == this.STATE_WAITING_LOBBY){   
+            console.log("STATE STATE_WAITING_LOBBY "+this.currentState+" playerid "+this.playerId+" polling "+!this.bPollingForPlayerCount);
             // if there is no player ID, the player itself failed in joining the game
             // since the server did not return a value yet or not at all. 
             if (this.playerId > -1 && !this.bPollingForPlayerCount){
+                console.log("START polling");
+                //debugger;
                 // If we have a player ID we need to wait for the other players                
                 this.getPollPlayerCount();
             }         
@@ -303,6 +308,8 @@ export class GameManagerClientService
 
     private ClearCardsUI():void
     {
+        console.log("ClearCardsUI STATE "+this.currentState);
+
         if (this.currentCardUIA){
             this.viewport.removeChild(this.currentCardUIA);
             this.currentCardUIA.destroy();
@@ -322,6 +329,8 @@ export class GameManagerClientService
 
     private showUI():void
     {
+        console.log("showUI STATE "+this.currentState);
+
         for (let i: number = 0; i < 3; i++)
         {
             const card: Card = new Card(this.textures);
@@ -377,6 +386,8 @@ export class GameManagerClientService
     */
     private processPlayerHoldingCards(holding:any): void
     {
+        console.log("process cards STATE "+this.currentState);
+
         console.log("Player "+this.playerId+" Holding: "+holding); 
         /*for (let i: number = 0; i < holding.length; i++)
         {
@@ -409,28 +420,34 @@ export class GameManagerClientService
     }
 
     private joinGame():void{
+        console.log("join game STATE "+this.currentState);
         this.doGetRequestJoinAndGetPlayerID().subscribe((data) =>
         {
-            if (data['id'])
-            {
-                // Store the given playerID
-                this.playerId = data['id'];          
-                // generate a new player name
-                this.generatePlayerName(); 
-            }else{
-                // error
-
-            }    
+            console.log("join game STATE "+data['id']);            
+            // Store the given playerID
+            this.playerId = data['id'];          
+            // generate a new player name
+            this.generatePlayerName(); 
+            // Set initial state
+            this.currentState = this.STATE_WAITING_LOBBY;
+            this._currentTimeDelay = this.INITIAL_POLL_LOBBY_TIME;               
+        }, (error) => {
+            //error
         });
     }
 
     private getPollPlayerCount():void{
+        debugger;
+        console.log("poll player count STATE "+this.currentState);
         this.bPollingForPlayerCount = true;
         this.doGetRequestGetPlayerCount().subscribe((data) =>
         {
-            if (data['online'])
+            debugger;
+            if (data['Online'])
             {
-                if (data['online'] >= 4 && this.currentState == this.STATE_WAITING_LOBBY){
+                console.log(" -> poll player count is "+data['Online']);
+                debugger;
+                if (data['Online'] >= 1 && this.currentState == this.STATE_WAITING_LOBBY){
                     // set in between host, so it stops polling and will wait for first hand data.
                     this.currentState == this.STATE_WAITING_FOR_HOST;
                     // continue with game
@@ -448,6 +465,7 @@ export class GameManagerClientService
     }    
 
     private GetNewHandOfCards():void{
+        console.log("get new hand of cards STATE "+this.currentState);
 
         // reset cards to unused
         this.currentCardHoldingA = -1;
