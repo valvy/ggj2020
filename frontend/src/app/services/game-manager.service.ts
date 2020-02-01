@@ -33,11 +33,15 @@ export class GameManagerService
             const card: Card = new Card(this.textures);
             const randomAction = Math.floor(Math.random() * 3);
             const randomEntity = Math.floor(Math.random() * 3);
+
+            const height: number = (window.innerHeight - 100) / 3;
             card.init(
                 ActionType[Object.keys(ActionType)[randomAction]], 
-                EntityType[Object.keys(EntityType)[randomEntity]]);
+                EntityType[Object.keys(EntityType)[randomEntity]], height);
 
-            card.createCard(new Point(window.innerWidth / 2, i * 250 + 150));
+            const actualHeight = card.actualHeight;
+            
+            card.createCard(new Point(window.innerWidth / 2, (actualHeight / 2) + (i * 25) + 25 + i * actualHeight));
 
             this.viewport.addChild(card);
         }       
