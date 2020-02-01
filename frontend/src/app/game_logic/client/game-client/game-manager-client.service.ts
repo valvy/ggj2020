@@ -44,7 +44,7 @@ export class GameManagerClientService
             card.createCard(new Point(window.innerWidth / 2, (actualHeight / 2) + (i * 25) + 25 + i * actualHeight));
 
             this.viewport.addChild(card);
-        }       
+        }
         
         this.gameLoader.addGameLoopTicker(this.updateCycle.bind(this));        
     }
