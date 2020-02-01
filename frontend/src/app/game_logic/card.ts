@@ -1,4 +1,5 @@
 import { Sprite, Texture, Text, Point } from 'pixi.js';
+import { debug } from 'util';
 
 export enum ActionType
 {
@@ -26,9 +27,15 @@ export class Card extends Sprite
     private startDragHorizontal: number;
     private _size: number;
 
+
     public get actualHeight(): number
     {
         return this._size * this.height;
+    }
+
+    public get actualWidth(): number
+    {
+        return this.width;
     }
 
     constructor(private textures: Map<string, Texture>)
@@ -141,5 +148,26 @@ export class Card extends Sprite
     private onDragEnd(event): void
     {
         this.dragging = false;
+        this.snapCardToSeletionArea();
+    }
+
+
+    private snapCardToSeletionArea() : void
+    {
+
+        let widthPartialSize = (window.innerWidth / 4);
+        let leftSide = widthPartialSize * 1;
+        let middleSide = window.innerWidth / 2;
+        let rightSide = widthPartialSize * 3;
+
+        //console.log("position "+this.position.x+" this.actualWidth  "+this.actualWidth+" leftSide"+leftSide  );
+
+        if ( this.position.x < leftSide + (this.actualWidth / 2) ){
+            this.position.x = leftSide;
+        }else if(this.position.x > rightSide - (this.actualWidth / 2) ){
+            this.position.x = rightSide;
+        }else{
+            this.position.x = middleSide;
+        }
     }
 }

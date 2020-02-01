@@ -1,4 +1,4 @@
-name := """play-scala-seed"""
+name := """ggj2020-backend"""
 organization := "com.example"
 
 version := "1.0-SNAPSHOT"
@@ -9,8 +9,6 @@ scalaVersion := "2.13.1"
 
 
 libraryDependencies += guice
-libraryDependencies += jdbc
-libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1206-jdbc41"
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
 
 // Adds additional packages into Twirl

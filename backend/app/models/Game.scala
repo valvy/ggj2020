@@ -4,7 +4,7 @@ import java.sql.Date
 
 import play.api.libs.json.Json
 
-case class Game(date: Date, URI: String, closed: Boolean)
+case class Game(over : Boolean, winner : Int)
 
 
 object Game {

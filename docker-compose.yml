@@ -2,31 +2,11 @@
 ## Not usable in production. NOT SECURE.
 version: "2"
 services:
-  ## The database makes use of POSTGRES.
-  database:
-    restart: always
-    build: ./database
-    container_name: GGJ2020-db-service
-    volumes: 
-      - ./data:/var/lib/postgresql/data
-    #ports: 
-    #  - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=example
-      - DEBUG=true
-
   backend: 
     build: ./backend
     container_name: GGJ2020-api-service
     environment:
-      # Override the database.
-      - DATABASE_USERNAME=postgres
-      - BACKEND_SECRET=adsfasdfsfa
-      - DATABASE_PASSWORD=example
-      - DATABASE_HOST=jdbc:postgresql://database/sampledb
       - PLAY_SECRET=adfadsfdsfa
-    depends_on:
-      - database
   frontend:
     # NGINX that serves the 
     build: ./frontend
