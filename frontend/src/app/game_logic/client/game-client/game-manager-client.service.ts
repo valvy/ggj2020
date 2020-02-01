@@ -187,7 +187,7 @@ export class GameManagerClientService
             this.AddCardText(positionHeight);
 
             this.viewport.addChild(card);
-        }       
+        }
         
         this.AddHelpText();
 
