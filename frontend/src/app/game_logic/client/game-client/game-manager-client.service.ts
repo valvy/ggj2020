@@ -20,6 +20,8 @@ export class GameManagerClientService
     private styleTxtTitle:TextStyle;
     private styleTxtHelp:TextStyle;
 
+    private playerName:String;
+
 
 
     constructor(private gameLoader: GameLoaderService) 
@@ -93,10 +95,24 @@ export class GameManagerClientService
             wordWrapWidth: 440,
         });        
 
+        this.generatePlayerName();
     }
+
+    private generatePlayerName(): void{
+
+        var namesFirst = ["Bewilderd", "Hearless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke"];
+        var namesSecond = ["Overlord", "Warmonger", "Capatalist", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie"];
+
+        let first = Math.floor(Math.random() * namesFirst.length) + 1;
+        let second = Math.floor(Math.random() * namesSecond.length) + 1;
+
+        Math.floor(Math.random()*10) + 1
+        this.playerName = namesFirst[first]+" "+namesSecond[second];
+    }
+
     private AddHelpText() : void
     {
-        const textTitle = new Text('Your hand', this.styleTxtTitle);
+        const textTitle = new Text(this.playerName+"s' cards", this.styleTxtTitle);
         textTitle.anchor.set(0.5, 0.5);
         textTitle.x = (window.innerWidth / 2);
         textTitle.y = 28;
