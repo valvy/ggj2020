@@ -26,9 +26,9 @@ object GameService {
 
   private val players : Array[Player] = new Array[Player](MAX_PLAYER_COUNT)
 
-  //def getGameOver : Game {
-   // winnerAndOver
-  //}
+  def getGameOver : Game = {
+    winnerAndOver
+  }
 
   def startGame = {
     state = GameState.QRCode

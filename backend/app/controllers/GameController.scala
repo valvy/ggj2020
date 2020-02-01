@@ -46,8 +46,8 @@ class GameController @Inject()(
   }
 
   def getGameOver = Action { implicit request: Request[AnyContent] =>
-   // GameService.winnerAndOver
-    Ok(Json.obj("adsf"->" adsf"))
+
+    Ok(Json.toJson(GgitameService.getGameOver))
   }
 
   def resetGame = Action {  implicit request: Request[AnyContent] =>
