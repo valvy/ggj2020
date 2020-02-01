@@ -24,15 +24,23 @@ export class GameManagerClientService
     private styleTxtPlay:TextStyle;
     private styleTxtTitle:TextStyle;
     private styleTxtHelp:TextStyle;
+    private textHelp:Text;
 
     private playerName:String;
     private playerId:any;
     private currentCardHoldingA:any;
     private currentCardHoldingB:any;
     private currentCardHoldingC:any;
+    private currentCardUIA:Card;
+    private currentCardUIB:Card;
+    private currentCardUIC:Card;
 
     private currentCardPlay:any;
     private currentCardDiscard:any;
+
+    private INITIAL_START_TIME: number = 10;
+    private _startTime: number;
+    private _date: Date;
 
 /* Server Card Data - backend/CardPool.scale
     private val card_options = Array(
@@ -155,12 +163,12 @@ Server GET/POST urls
 
         this.viewport.addChild(textTitle);
 
-        const textHelp = new Text('Play 1 card and Discard 1 card', this.styleTxtHelp);
-        textHelp.anchor.set(0.5, 0.5);
-        textHelp.x = (window.innerWidth / 2);
-        textHelp.y = window.innerHeight - 16;
+        this.textHelp = new Text('Play 1 card and Discard 1 card', this.styleTxtHelp);
+        this.textHelp.anchor.set(0.5, 0.5);
+        this.textHelp.x = (window.innerWidth / 2);
+        this.textHelp.y = window.innerHeight - 16;
 
-        this.viewport.addChild(textHelp);
+        this.viewport.addChild(this.textHelp);
     }
 
     private AddCardText(height:any) : void
@@ -197,6 +205,9 @@ Server GET/POST urls
 
     public startGame(): void
     {
+        this._date = new Date();
+        this._startTime = this.INITIAL_START_TIME;
+
         this.viewport = this.gameLoader.pixi.stage;
         this.fileLoader = this.gameLoader.fileLoader;
         this.textures = this.fileLoader.getTextures([
@@ -239,7 +250,36 @@ Server GET/POST urls
 
     private updateCycle(delta: number): void
     {
+        const now = new Date();
+        const diff = now.getTime() - this._date.getTime();
+        const timeLeft = this._startTime - diff / 1000;
+        if (this.textHelp != null){
+            this.textHelp.text = 'Play 1 card and Discard 1 card... Time:' + timeLeft.toFixed(3);
+        }        
+        if (timeLeft <= 0)
+        {
+            this.ClearCardsUI();
+            this.doPostPlayerChosenCards();
+        }
+    }
 
+    private ClearCardsUI():void
+    {
+        if (this.currentCardUIA){
+            this.viewport.removeChild(this.currentCardUIA);
+            this.currentCardUIA.destroy();
+            this.currentCardUIA = null;
+        } 
+        if (this.currentCardUIB){
+            this.viewport.removeChild(this.currentCardUIB);
+            this.currentCardUIB.destroy();
+            this.currentCardUIB = null;
+        } 
+        if (this.currentCardUIC){
+            this.viewport.removeChild(this.currentCardUIC);
+            this.currentCardUIC.destroy();
+            this.currentCardUIC = null;
+        }                 
     }
 
     private showUI():void
@@ -251,15 +291,21 @@ Server GET/POST urls
             const randomEntity = Math.floor(Math.random() * 3);
 
             const height: number = (window.innerHeight - 100) / 3;
+
+            // determine the right current card
             let cardValue = -1;
             if (i==0) {
                 cardValue = this.currentCardHoldingA;
+                this.currentCardUIA = card;
             }else if (i==1) {
                 cardValue = this.currentCardHoldingB;
+                this.currentCardUIB = card;
             }else if (i==2) {
                 cardValue = this.currentCardHoldingC;
+                this.currentCardUIC = card;
             }
 
+            // configure the card so it displays the cards holding in player hand
             card.init(  Card.GetActionTypeByCardID(cardValue), 
                         Card.GetEnityTypeByCardID(cardValue), 
                         height);
@@ -354,9 +400,14 @@ Server GET/POST urls
         {
             if (data['PlayerInfo'])
             {
+                // Read hand data and convert to client cards
                 this.processPlayerHoldingCards(data['PlayerInfo']['holding']);                
 
-                this.showUI();             
+                // Show new hand
+                this.showUI();   
+                
+                // restart round time
+                this._startTime = this.INITIAL_START_TIME;
             }else{
                 // error
             }
@@ -385,6 +436,20 @@ Server GET/POST urls
         headers.append('Access-Control-Allow-Origin', '*');
         headers.append('Content-Type', 'application/json');
         return this.httpRequest.get('http://localhost:9000/game/player/'+this.playerId, {headers: headers});
+    }
+
+    public doPostPlayerChosenCards(): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        //headers.append('Access-Control-Allow-Origin', '*');
+        //headers.append('Content-Type', 'application/json');
+        return this.httpRequest.post('http://localhost:9000/game/player/'+this.playerId, 
+        {
+            id:this.playerId,
+            play:this.currentCardPlay,
+            dicard:this.currentCardDiscard
+        });
+        //{headers: headers});
     }
 
 }
