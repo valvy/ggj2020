@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+
+<html charset="UTF-8">
+   <head>
+      
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+   </head>
+   
+   <body>
+      <div id = "sse">
+         <a href = "javascript:WebSocketTest()">Run WebSocket</a>
+
+      </div> 
+      
+      <div id="output">
+
+      </div>
+
+      <script type = "text/javascript">
+      $(() =>{
+            $.ajax({url: "http://localhost:9001/game/generate",
+            crossDomain: true,
+            success: function(result){
+                console.log(result)
+            },
+            error: function(err) {
+               console.log(err)
+            }
+            });
+      });
+</script>
+   </body>
+</html>
