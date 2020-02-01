@@ -27,9 +27,12 @@ export class GameManagerClientService
 
     private playerName:String;
     private playerId:any;
-    private currentCardA:String;
-    private currentCardB:String;
-    private currentCardC:String;
+    private currentCardHoldingA:any;
+    private currentCardHoldingB:any;
+    private currentCardHoldingC:any;
+
+    private currentCardPlay:any;
+    private currentCardDiscard:any;
 
 /* Server Card Data - backend/CardPool.scale
     private val card_options = Array(
@@ -39,6 +42,7 @@ export class GameManagerClientService
         "Destroy Window"
       )
 */
+
 
 /*
 Server GET/POST urls
@@ -55,6 +59,15 @@ Server GET/POST urls
     }
 
     private init(): void{
+
+        // reset cards to unused
+        this.currentCardHoldingA = -1;
+        this.currentCardHoldingB = -1;
+        this.currentCardHoldingC = -1;
+
+        this.currentCardPlay = -1;
+        this.currentCardDiscard = -1;
+
         this.styleTxtTitle = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 28,
@@ -238,9 +251,22 @@ Server GET/POST urls
             const randomEntity = Math.floor(Math.random() * 3);
 
             const height: number = (window.innerHeight - 100) / 3;
-            card.init(
+            let cardValue = -1;
+            if (i==0) {
+                cardValue = this.currentCardHoldingA;
+            }else if (i==1) {
+                cardValue = this.currentCardHoldingB;
+            }else if (i==2) {
+                cardValue = this.currentCardHoldingC;
+            }
+
+            card.init(  Card.GetActionTypeByCardID(cardValue), 
+                        Card.GetEnityTypeByCardID(cardValue), 
+                        height);
+
+            /*card.init(
                 ActionType[Object.keys(ActionType)[randomAction]], 
-                EntityType[Object.keys(EntityType)[randomEntity]], height);
+                EntityType[Object.keys(EntityType)[randomEntity]], height);*/
 
             const actualHeight = card.actualHeight;
             
@@ -254,6 +280,37 @@ Server GET/POST urls
         
         this.AddHelpText();
     }
+
+    /*
+    Version of 1 feb 2020 om 17:08
+    {"PlayerInfo":{"id":0,
+    "holding":[{"name":"Window","description":"Destroy Window","effect":"Destroy","id":3},
+                {"name":"Window","description":"Destroy Window","effect":"Destroy","id":3},
+                {"name":"Roof","description":"Create roof","effect":"Create","id":0}]
+    ,"playedCards":[],"mustMake":[{"name":"Roof","description":"Create roof","effect":"Create","id":0},
+                {"name":"Window","description":"Create Window","effect":"Create","id":2}]
+    ,"effects":[],"round":0,"lastCards":[]}}
+    */
+    private processPlayerHoldingCards(holding:any): void
+    {
+        console.log("Player "+this.playerId+" Holding: "+holding); 
+        /*for (let i: number = 0; i < holding.length; i++)
+        {
+            console.log("Holding data "+this.playerId+" element: "+ i +" = "+holding[i]);            
+        }*/
+        
+        /*this.CreateCardFromServerData(holding, 0);
+        this.CreateCardFromServerData(holding, 1);
+        this.CreateCardFromServerData(holding, 2);*/
+        this.currentCardHoldingA = holding[0]['id'];
+        this.currentCardHoldingB = holding[1]['id'];
+        this.currentCardHoldingC = holding[2]['id'];
+    }
+
+    /*private CreateCardFromServerData(holding:any, id:any): void
+    {
+        let cardID = holding[id]['id'];
+    }*/
 
     private GenerateNewGame():void{
         this.doGetRequestStartAndGenerateServerGame().subscribe((data) =>
@@ -284,10 +341,21 @@ Server GET/POST urls
     }
 
     private NewHandOfCards():void{
+
+        // reset cards to unused
+        this.currentCardHoldingA = -1;
+        this.currentCardHoldingB = -1;
+        this.currentCardHoldingC = -1;
+
+        this.currentCardPlay = -1;
+        this.currentCardDiscard = -1;
+
         this.doGetRequestGetPlayerCard().subscribe((data) =>
         {
             if (data['PlayerInfo'])
             {
+                this.processPlayerHoldingCards(data['PlayerInfo']['holding']);                
+
                 this.showUI();             
             }else{
                 // error

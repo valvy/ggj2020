@@ -28,6 +28,54 @@ export class Card extends Sprite
     private _size: number;
 
 
+    // STATIC CARD CODES - MAPPED WITH SERVER BACKEND AND WITH HOST-OUTPUT
+    // Note when modifying these make sure the match server and host-output
+    public static CARD_CODE_FIX_ROOF = 0;    
+    public static CARD_CODE_DESTROY_ROOF = 1;
+    public static CARD_CODE_SHIELD_ROOF = 4;
+
+    public static CARD_CODE_FIX_WINDOW = 2;
+    public static CARD_CODE_DESTROY_WINDOW = 3;
+    public static CARD_CODE_SHIELD_WINDOW = 5;
+
+    public static CARD_CODE_FIX_DOOR = 6;
+    public static CARD_CODE_DESTROY_DOOR = 7;
+    public static CARD_CODE_SHIELD_DOOR = 8;
+
+    public static GetActionTypeByCardID(id:any): ActionType{
+        switch(id){
+            case 0:  // Build / Fix
+            case 2:  // Build / Fix
+            case 6:  // Build / Fix
+            return ActionType.Build;
+            case 1:  // Attack / Destroy
+            case 3:  // Attack / Destroy
+            case 7:  // Attack / Destroy
+            return ActionType.Attack;
+            case 4:  // Defend / Shield
+            case 5:  // Defend / Shield
+            case 8:  // Defend / Shield
+            return ActionType.Build;
+        }
+    }
+
+    public static GetEnityTypeByCardID(id:any): EntityType{
+        switch(id){
+            case 0:  // Doors
+            case 1:  // 
+            case 4:  // 
+            return EntityType.Door;
+            case 2:  // Windows
+            case 3:  // 
+            case 5:  // 
+            return EntityType.Window;
+            case 6:  // Roofs
+            case 7:  // 
+            case 8:  // Defend / Shield
+            return EntityType.Roof;
+        }
+    }
+
     public get actualHeight(): number
     {
         return this._size * this.height;
