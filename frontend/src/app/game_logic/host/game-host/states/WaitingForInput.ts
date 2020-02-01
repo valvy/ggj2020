@@ -40,8 +40,10 @@ export class WaitingForInputs extends State
         this._text.text = 'Make your choice!\n' + timeLeft.toFixed(3);
         if (timeLeft <= 0)
         {
-            this._stateManager.doGetRequest('http://localhost:9000/game/player').subscribe((data) =>
+
+            this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player').subscribe((data) =>
             {
+                console.log(data);
                 this.actions.splice(0);
                 data.Players.forEach(e =>
                 {

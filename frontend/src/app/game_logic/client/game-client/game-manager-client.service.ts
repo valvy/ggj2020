@@ -273,7 +273,10 @@ export class GameManagerClientService
             console.log("STATE STATE_SELECT_CARDS"+this.currentState);
             timeLeft = 0;
             this.ClearCardsUI();
-            this.doPostPlayerChosenCards();
+            this.doPostPlayerChosenCards().subscribe((data) =>
+            {
+                console.log('posted player data!' + data);
+            });
             this._date = now;   // use now as new date time to caulcate the new timeDiff
             // Set the host resolve state the client is in
             this.currentState = this.STATE_RESOLVE_TURN;
@@ -437,17 +440,14 @@ export class GameManagerClientService
     }
 
     private getPollPlayerCount():void{
-        debugger;
         console.log("poll player count STATE "+this.currentState);
         this.bPollingForPlayerCount = true;
         this.doGetRequestGetPlayerCount().subscribe((data) =>
         {
-            debugger;
             if (data['Online'])
             {
                 console.log(" -> poll player count is "+data['Online']);
-                debugger;
-                if (data['Online'] >= 1 && this.currentState == this.STATE_WAITING_LOBBY){
+                if (data['Online'] === 4 && this.currentState == this.STATE_WAITING_LOBBY){
                     // set in between host, so it stops polling and will wait for first hand data.
                     this.currentState == this.STATE_WAITING_FOR_HOST;
                     // continue with game
@@ -477,10 +477,10 @@ export class GameManagerClientService
 
         this.doGetRequestGetPlayerCard().subscribe((data) =>
         {
-            if (data['PlayerInfo'])
+            if (data['Players'])
             {
                 // Read hand data and convert to client cards
-                this.processPlayerHoldingCards(data['PlayerInfo']['holding']);                
+                this.processPlayerHoldingCards(data['Players'][this.playerId]['holding']);                
 
                 // Show new hand
                 this.showUI();   
@@ -496,36 +496,43 @@ export class GameManagerClientService
         });
     }
 
-    public doGetRequestStartAndGenerateServerGame(): Observable<any>
+    private get headers(): any
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
         headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('http://localhost:9000/game/generate', {headers: headers});
+        headers.append('Accept', '*/*');
+        return headers;
+    }
+
+    private doGetRequest(url: string): Observable<any>
+    {
+        return this.httpRequest.get(url, {headers: this.headers});
+    }
+
+    private doPostRequest(url: string, body: any): Observable<any>
+    {
+        return this.httpRequest.post(url, body, {headers: this.headers });
+    }
+
+    public doGetRequestStartAndGenerateServerGame(): Observable<any>
+    {
+        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/generate');
     }
 
     public doGetRequestJoinAndGetPlayerID(): Observable<any>
     {
-        const headers: HttpHeaders = new HttpHeaders();
-        headers.append('Access-Control-Allow-Origin', '*');
-        headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('http://localhost:9000/game/join', {headers: headers});
+        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/join');
     }
 
     public doGetRequestGetPlayerCount(): Observable<any>
     {
-        const headers: HttpHeaders = new HttpHeaders();
-        headers.append('Access-Control-Allow-Origin', '*');
-        headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('http://localhost:9000/game/player/count', {headers: headers});
+        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/count');
     }
 
     public doGetRequestGetPlayerCard(): Observable<any>
     {
-        const headers: HttpHeaders = new HttpHeaders();
-        headers.append('Access-Control-Allow-Origin', '*');
-        headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('http://localhost:9000/game/player/'+this.playerId, {headers: headers});
+        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player');
     }
 
     public doPostPlayerChosenCards(): Observable<any>
@@ -533,7 +540,7 @@ export class GameManagerClientService
         const headers: HttpHeaders = new HttpHeaders();
         //headers.append('Access-Control-Allow-Origin', '*');
         //headers.append('Content-Type', 'application/json');
-        return this.httpRequest.post('http://localhost:9000/game/player/'+this.playerId, 
+        return this.doPostRequest('https://ggj2020.azurewebsites.net/api/game/player/'+this.playerId, 
         {
             id:this.playerId,
             play:this.currentCardPlay,

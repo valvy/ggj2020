@@ -27,7 +27,7 @@ export class WaitingForPlayers extends State
 
     private generateWorld(): void
     {
-        this._stateManager.doGetRequest('http://localhost:9000/game/generate').subscribe((data) =>
+        this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/generate').subscribe((data) =>
         {
             this._text.text = 'Waiting for players...';
             this._poller = setInterval(() => this.pollForPlayers(), 1500);          
@@ -41,13 +41,13 @@ export class WaitingForPlayers extends State
 
     private pollForPlayers(): void
     {
-        this._stateManager.doGetRequest('http://localhost:9000/game/player/count').subscribe((data) =>
+        this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/count').subscribe((data) =>
         {
             const numberofplayers: number = data.Online;
             this._text.text = 'Waiting for players...\n' + numberofplayers + ' players connected.';
             if (numberofplayers === 4)
             {
-                this._stateManager.doGetRequest('http://localhost:9000/game/player').subscribe((data) =>
+                this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player').subscribe((data) =>
                 {
                     const players = data.Players;            
             
