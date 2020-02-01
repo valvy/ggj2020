@@ -18,13 +18,15 @@ export class GameManagerClientService
     private data: any;
     private dragging: boolean;
 
+    public btnStartGame:Sprite;
+
     private styleTxtDiscard:TextStyle;
     private styleTxtPlay:TextStyle;
     private styleTxtTitle:TextStyle;
     private styleTxtHelp:TextStyle;
 
     private playerName:String;
-    private playerId:String;
+    private playerId:any;
     private currentCardA:String;
     private currentCardB:String;
     private currentCardC:String;
@@ -41,10 +43,11 @@ export class GameManagerClientService
 /*
 Server GET/POST urls
     http://localhost:9000/game/generate
-    http://localhost:9000/game/join
+    http://localhost:9000/game/join         get -> return ID
     http://localhost:9000/game/player/0     get / post 
     http://localhost:9000/game              get / delete
 */
+
 
     constructor(private gameLoader: GameLoaderService, private httpRequest: HttpClient) 
     {
@@ -115,15 +118,13 @@ Server GET/POST urls
             dropShadowDistance: 6,
             wordWrap: true,
             wordWrapWidth: 440,
-        });        
-
-        this.generatePlayerName();
+        });                  
     }
 
     private generatePlayerName(): void{
 
-        var namesFirst = ["Bewilderd", "Hearless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke"];
-        var namesSecond = ["Overlord", "Warmonger", "Capatalist", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie"];
+        var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
+        var namesSecond = ["Nietsnut", "Tug", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie", "Landloper"];
 
         let first = Math.floor(Math.random() * namesFirst.length) + 1;
         let second = Math.floor(Math.random() * namesSecond.length) + 1;
@@ -134,7 +135,7 @@ Server GET/POST urls
 
     private AddHelpText() : void
     {
-        const textTitle = new Text(this.playerName+"s' cards", this.styleTxtTitle);
+        const textTitle = new Text("("+this.playerId+")"+this.playerName+"s' cards", this.styleTxtTitle);
         textTitle.anchor.set(0.5, 0.5);
         textTitle.x = (window.innerWidth / 2);
         textTitle.y = 28;
@@ -183,13 +184,53 @@ Server GET/POST urls
 
     public startGame(): void
     {
-
         this.viewport = this.gameLoader.pixi.stage;
         this.fileLoader = this.gameLoader.fileLoader;
         this.textures = this.fileLoader.getTextures([
             'assets/cards/card-bg.png', 'assets/cards/defend.png', 'assets/cards/attack.png', 'assets/cards/build.png',
             'assets/cards/door.png', 'assets/cards/roof.png', 'assets/cards/window.png']);
+             
+        this.gameLoader.addGameLoopTicker(this.updateCycle.bind(this));    
         
+        // NOTE: this button should be temporary as players would normally only join
+        // Create and show Start game button        
+        this.btnStartGame = Sprite.from('assets/cards/card-bg.png');
+
+        // Set the initial position
+        this.btnStartGame.anchor.set(0.5);
+        this.btnStartGame.x = window.innerWidth  / 2;
+        this.btnStartGame.y = window.innerHeight / 2;
+        
+        // Opt-in to interactivity
+        this.btnStartGame.interactive = true;
+        
+        // Shows hand cursor
+        this.btnStartGame.buttonMode = true;
+        
+        // Pointers normalize touch and mouse
+        this.btnStartGame.on('pointerdown', (e) => this.onClick(e));
+        
+        // Alternatively, use the mouse & touch events:
+        // sprite.on('click', onClick); // mouse-only
+        // sprite.on('tap', onClick); // touch-only
+        
+        this.viewport.addChild(this.btnStartGame); 
+    }
+
+    private onClick(e) : void {
+        this.btnStartGame.visible = false;
+        //NOTE: generate only for debugging on localmachine to test server create game, otherwise directly join
+        //this.GenerateNewGame();
+        this.joinGame(); 
+    }
+
+    private updateCycle(delta: number): void
+    {
+
+    }
+
+    private showUI():void
+    {
         for (let i: number = 0; i < 3; i++)
         {
             const card: Card = new Card(this.textures);
@@ -212,28 +253,70 @@ Server GET/POST urls
         }
         
         this.AddHelpText();
-
-        this.gameLoader.addGameLoopTicker(this.updateCycle.bind(this));        
     }
 
-    private NewHand():void{
-        this.doGetRequest().subscribe((data) =>
+    private GenerateNewGame():void{
+        this.doGetRequestStartAndGenerateServerGame().subscribe((data) =>
         {
-            
+            if (data['Hello world'])
+            {
+                this.joinGame();            
+            }else{
+                // error
+            }            
         });
     }
 
-    private updateCycle(delta: number): void
-    {
+    private joinGame():void{
+        this.doGetRequestJoinAndGetPlayerID().subscribe((data) =>
+        {
+            if (data['id'])
+            {
+                this.playerId = data['id'];          
 
+                this.generatePlayerName(); 
+                this.NewHandOfCards(); 
+            }else{
+                // error
+
+            }    
+        });
     }
 
-    public doGetRequest(): Observable<any>
+    private NewHandOfCards():void{
+        this.doGetRequestGetPlayerCard().subscribe((data) =>
+        {
+            if (data['PlayerInfo'])
+            {
+                this.showUI();             
+            }else{
+                // error
+            }
+        });
+    }
+
+    public doGetRequestStartAndGenerateServerGame(): Observable<any>
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
         headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('localhost:9000/game/player/count', {headers: headers});
+        return this.httpRequest.get('http://localhost:9000/game/generate', {headers: headers});
+    }
+
+    public doGetRequestJoinAndGetPlayerID(): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        headers.append('Access-Control-Allow-Origin', '*');
+        headers.append('Content-Type', 'application/json');
+        return this.httpRequest.get('http://localhost:9000/game/join', {headers: headers});
+    }
+
+    public doGetRequestGetPlayerCard(): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        headers.append('Access-Control-Allow-Origin', '*');
+        headers.append('Content-Type', 'application/json');
+        return this.httpRequest.get('http://localhost:9000/game/player/'+this.playerId, {headers: headers});
     }
 
 }
