@@ -59,8 +59,10 @@ export class StateManager
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
+
+        
         headers.append('Content-Type', 'application/json');
-        return this.httpRequest.get('localhost:9000/game/player/count', {headers: headers});
+        return this.httpRequest.get('http://localhost:9000/game/player/count', {headers: headers});
     }
 
     public gameTick(delta: number): void
