@@ -1,7 +1,6 @@
 import { Viewport } from 'pixi-viewport';
 import { State } from './State';
 import { TextStyle, Text } from 'pixi.js';
-import { setInterval } from 'timers';
 import { HttpClient } from '@angular/common/http';
 
 export class WaitingForPlayers extends State
