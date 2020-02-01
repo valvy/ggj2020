@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --host 0.0.0.0",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -19,6 +19,12 @@
     "@angular/platform-browser": "~8.2.11",
     "@angular/platform-browser-dynamic": "~8.2.11",
     "@angular/router": "~8.2.11",
+    "@ng-bootstrap/ng-bootstrap": "^4.2.2",
+    "bootstrap":"^4.4.1",
+    "vector2d": "^3.0.0",
+    "gl-matrix": "^3.1.0",
+    "pixi-viewport": "^4.4.1",
+    "pixi.js": "^5.2.0",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

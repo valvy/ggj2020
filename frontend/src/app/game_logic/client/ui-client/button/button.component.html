@@ -1,0 +1,8 @@
+<div [ngStyle]="buttonStyle">
+    <img #button src="assets/UI/window/btn_brown_normal.svg"
+    (touchstart)="touchstart($event)"
+    (mousedown)="touchstart($event)"
+    (touchend)="touchend($event)"
+    (mouseup)="touchend($event)">
+    <h1 class="buttonText uiText">{{buttonText}}</h1>
+</div>
