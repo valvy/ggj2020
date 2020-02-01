@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-ui',
+  selector: 'app-host-ui',
   templateUrl: './ui.component.html',
   styleUrls: ['./ui.component.scss']
 })
-export class UiComponent implements OnInit {
+export class UiHostComponent implements OnInit {
 
   constructor() { }
 

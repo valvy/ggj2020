@@ -1,0 +1,34 @@
+{
+    "id": "tile_window",
+    "component_type": "window",
+    "position": { "x": 0, "y": 0 },
+    "scale": { "x": 745, "y": 1079 },
+    "anchor": { "x": 0.5, "y": 0.5 },
+    "angle": 0,
+    "children":
+    [
+        {
+            "id": "background",
+            "component_type" : "image",
+            "position" : { "x": 0, "y": -100 },
+            "scale" : { "x": 0.75, "y": 0.75 },
+            "anchor": { "x": 0.5, "y": 0.5 },
+            "texture_url": "assets/UI/window/side_frame2.svg",
+            "angle" : 0,
+            "children" : []
+        },
+        { 
+            "id" : "btn_close",
+            "component_type" : "button",
+            "position": { "x": 425, "y": 145 },
+            "scale" : {"x": 0.5, "y": 0.5},
+            "anchor": { "x": 0.5, "y": 0.5 },
+            "angle" : 0,
+            "image_url_normal": "assets/UI/window/btn_n_cancel.svg",
+            "image_url_hover": "assets/UI/window/btn_h_cancel.svg",
+            "image_url_clicked": "assets/UI/window/btn_c_cancel.svg",
+            "image_url_disabled": "assets/UI/window/btn_d_cancel.svg",
+            "children" : []
+        }
+    ]
+}

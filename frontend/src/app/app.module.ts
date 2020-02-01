@@ -6,22 +6,29 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { GGJ2020Service } from './services/ggj2020.service';
-import { GameComponent as GameHost } from './game_logic/host/game-host/game.component';
-import { GameComponent as GameClient } from './game_logic/client/game-client/game.component';
-import { UiComponent } from './game_logic/host/ui-host/ui.component';
+
+import { GameHostComponent } from './game_logic/host/game-host/game.component';
+import { UiHostComponent } from './game_logic/host/ui-host/ui.component';
+
+import { GameClientComponent } from './game_logic/client/game-client/game-client.component';
+import { UiClientComponent } from './game_logic/client/ui-client/ui-client.component';
+
+import { ButtonComponent } from './game_logic/client/ui-client/button/button.component';
 
 const routes: Routes =
 [
-    { path: 'game-host', component: GameHost },
-    { path: 'game-client', component: GameClient },
+    { path: 'game-host', component: GameHostComponent },
+    { path: 'game-client', component: GameClientComponent },
     { path: '', redirectTo: 'game', pathMatch: 'full' }
 ];
 @NgModule({
   declarations: [
     AppComponent,
-    GameHost,
-    UiComponent,
-    GameClient
+    GameHostComponent,
+    UiHostComponent,
+    GameClientComponent,
+    ButtonComponent,
+    UiClientComponent
   ],
   imports: [
     BrowserModule,

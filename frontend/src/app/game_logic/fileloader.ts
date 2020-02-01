@@ -23,13 +23,13 @@ export class FileLoader
         });
     }
 
-    public getTextures(filenames: string[]): Texture[]
+    public getTextures(filenames: string[]): Map<string, Texture>
     {
-        const textures: Texture[] = [];
+        const textures: Map<string, Texture> = new Map<string, Texture>();
 
         filenames.forEach((f: string) =>
         {
-            textures.push(this.textures.get(f));
+            textures.set(f, this.textures.get(f));
         });
 
         return textures;

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ViewportManager } from '../game_logic/viewport';
 import * as PIXI from 'pixi.js';
 import { FileLoader } from '../game_logic/fileloader';
 
@@ -8,13 +7,12 @@ import { FileLoader } from '../game_logic/fileloader';
 })
 export class GameLoaderService
 {
-    private pixi: PIXI.Application; // this will be our pixi application
-    private _viewport: ViewportManager;
+    private _pixi: PIXI.Application; // this will be our pixi application
     private _fileLoader: FileLoader;
    
-    public get viewport(): ViewportManager
+    public get pixi(): PIXI.Application
     {
-        return this._viewport;
+        return this._pixi;
     }
 
     public get fileLoader(): FileLoader
@@ -24,12 +22,12 @@ export class GameLoaderService
 
     public addGameLoopTicker(cycle: (delta) => void): void
     {
-        this.pixi.ticker.add(cycle);
+        this._pixi.ticker.add(cycle);
     }
 
     private initPixi(): void
     {
-        this.pixi = new PIXI.Application({ backgroundColor: 0x0 });
+        this._pixi = new PIXI.Application({ backgroundColor: 0x0 });
 
         PIXI.autoDetectRenderer({ 
             width: window.innerWidth,
@@ -41,24 +39,19 @@ export class GameLoaderService
     public init(cb: () => void): HTMLCanvasElement
     {
         this.initPixi();
-        this._viewport = new ViewportManager(this.pixi);
-        this._viewport.initViewport();
         this.resizePixi(); //can also be done on resize event.
         
         this.loadFiles(cb);
-        return this.pixi.view;
-    }
-
-    public addChild(c: any): void
-    {
-        this._viewport.addChild(c);
+        return this._pixi.view;
     }
 
     private loadFiles(onFilesLoaded: () => void): void
     {
         this._fileLoader = new FileLoader();
-        this._fileLoader.loadTextures(['assets/soldier_5.png'], onFilesLoaded);
-        this.pixi.start();
+        this._fileLoader.loadTextures(['assets/cards/card-bg.png',
+            'assets/cards/defend.png', 'assets/cards/attack.png', 'assets/cards/build.png',
+            'assets/cards/door.png', 'assets/cards/roof.png', 'assets/cards/window.png'], onFilesLoaded);
+        this._pixi.start();
     }    
 
     public resizePixi(): void
@@ -73,7 +66,7 @@ export class GameLoaderService
         {            
             h = w / ratio;
         }
-        this.pixi.renderer.resize(w, h);
-        this.pixi.stage.scale.set(1, 1);
+        this._pixi.renderer.resize(w, h);
+        this._pixi.stage.scale.set(1, 1);
     }
 }
