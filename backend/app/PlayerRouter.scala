@@ -27,6 +27,8 @@ class PlayerRouter @Inject()(controller: GameController) extends SimpleRouter {
       controller.resetGame
     case GET(p"/game") =>
       controller.getGameOver
+    case GET(p"/game/player") =>
+      controller.getPlayers
     /*
     case GET(p"/game") =>
       controller.createGame()
