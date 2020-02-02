@@ -116,7 +116,7 @@ export class Card extends Sprite
         this.buttonMode = true;
     }
 
-    public init(action: ActionType, entity: EntityType, height: number, cardID:number, gameManagerClient:any): void
+    public init(action: ActionType, entity: EntityType, height: number, cardID:number, gameManagerClient?:any): void
     {
         this.cardID = cardID;
         this.actionType = action;
@@ -153,11 +153,12 @@ export class Card extends Sprite
         //create a title
         this.addTitle();
         
-        //create an action icon
-        this.addAction();
 
         //create an entity icon
         this.addEntity();
+
+        //create an action icon
+        this.addAction();
     }
 
     private addTitle(): void
@@ -173,9 +174,9 @@ export class Card extends Sprite
     private addAction(): void
     {
         const actionIcon: Sprite = new Sprite(this.actionTexture);
-        actionIcon.position.set(700, 900);
+        actionIcon.position.set(700, 700);
         actionIcon.anchor.set(0.5, 0.5);
-        actionIcon.scale.set(1, 1);
+        actionIcon.scale.set(0.3, 0.3);
         this.addChild(actionIcon);
     }
 

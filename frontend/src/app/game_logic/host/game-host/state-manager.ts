@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { StartGameState } from './states/GameIntroState';
 import { PlayerHouse } from './player-house';
 import { GameLoaderService } from 'src/app/services/game-loader.service';
+import { Card } from '../../card';
 
 export enum StateType
 {
@@ -145,6 +146,11 @@ export class StateManager
         });
     }
 
+    public getTextures(): Map<string, Texture>
+    {
+        return this.textures;
+    }
+
     public getTexture(url: string): Texture
     {
         return this.textures.get(url);
@@ -191,11 +197,11 @@ export class StateManager
         if (this.actions.length > 0)
         {
             const action: iAction = this.actions.shift();
-            console.log(action);
-            //build -> on house.
-            //shield -> on house.
-            //destroy -> on house with item.
             let playerHouse: PlayerHouse = this.playerhouses.get(action.playerId);
+
+           // let card: Card = new Card(this._stateManager.getTextures());
+            //this.card.init();
+
             if (action.effect === 'Create')
             {
                 playerHouse.doCreate(action);

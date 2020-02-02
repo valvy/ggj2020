@@ -19,7 +19,7 @@ const routes: Routes =
 [
     { path: 'game-host', component: GameHostComponent },
     { path: 'game-client', component: GameClientComponent },
-    { path: '', redirectTo: 'game', pathMatch: 'full' }
+    { path: '', redirectTo: 'game-client', pathMatch: 'full' }
 ];
 @NgModule({
   declarations: [
