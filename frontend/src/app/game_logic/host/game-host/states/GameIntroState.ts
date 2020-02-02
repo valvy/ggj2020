@@ -1,6 +1,6 @@
 import { State } from './State';
 import { Constants } from 'src/app/Constants';
-import { Text, Graphics } from 'pixi.js';
+import { Text, Graphics, Sprite } from 'pixi.js';
 import { StateType } from '../state-manager';
 
 export class StartGameState extends State
@@ -22,22 +22,33 @@ export class StartGameState extends State
         this._viewport.addChild(this._text);
     }
 
+    lobby: Sprite;
     private drawBackground(): void
     {
-        let myGraph = new Graphics();
-        this._viewport.addChild(myGraph);
+        // this.lobby = new Sprite();
+        //     this.lobby = Sprite.from('assets/backgrounds/Background.png');
 
-        // Move it to the beginning of the line
-        myGraph.position.set(0, 0);
+        // // Set the initial position
+        // this.lobby.anchor.set(0.5);
 
-        // Draw the line (endPoint should be relative to myGraph's position)
-        myGraph.lineStyle(3, 0xffffff)
-           .moveTo(100, window.innerHeight / 2)
-           .lineTo(window.innerWidth - 100, window.innerHeight / 2);
+        // this.lobby.scale.set(0.35);
+        // this.lobby.x = window.innerWidth  / 2;
+        // this.lobby.y = window.innerHeight / 2;
+        // this._viewport.addChild(this.lobby);
+        // let myGraph = new Graphics();
+        // this._viewport.addChild(myGraph);
 
-        myGraph.lineStyle(3, 0xffffff)
-           .moveTo(window.innerWidth / 2, 50)
-           .lineTo(window.innerWidth / 2, window.innerHeight - 50);
+        // // Move it to the beginning of the line
+        // myGraph.position.set(0, 0);
+
+        // // Draw the line (endPoint should be relative to myGraph's position)
+        // myGraph.lineStyle(3, 0xffffff)
+        //    .moveTo(100, window.innerHeight / 2)
+        //    .lineTo(window.innerWidth - 100, window.innerHeight / 2);
+
+        // myGraph.lineStyle(3, 0xffffff)
+        //    .moveTo(window.innerWidth / 2, 50)
+        //    .lineTo(window.innerWidth / 2, window.innerHeight - 50);
     }
 
     public stateEnded(): void

@@ -27,6 +27,7 @@ export class ResolveAttacksState extends ResolveState
         this.sprite.anchor.set(0);
         this.sprite.position.set(window.innerWidth / 2, window.innerHeight / 2);
         this.sprite.scale.set(0.4);
+        this.sprite.rotation = 0;
     }
 
     public stateEnded(): void

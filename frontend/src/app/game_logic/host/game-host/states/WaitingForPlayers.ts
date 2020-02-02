@@ -53,7 +53,9 @@ export class WaitingForPlayers extends State
                 this._stateManager.doGetRequest(Constants.baseUrl + 'player').subscribe((data) =>
                 {
                     const players = data.Players;            
-            
+                    
+                   
+
                     this._stateManager.createPlayers(players);
                     this._stateManager.gotoState(StateType.GameIntro);
                     clearInterval(this._poller);

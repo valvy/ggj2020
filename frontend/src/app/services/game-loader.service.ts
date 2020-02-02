@@ -57,7 +57,10 @@ export class GameLoaderService
 
         //cards stuff
             'assets/cards/defend.png', 'assets/cards/attack.png', 'assets/cards/build.png',
-            'assets/cards/door.png', 'assets/cards/roof.png', 'assets/cards/window.png'], onFilesLoaded);
+            'assets/cards/door.png', 'assets/cards/roof.png', 'assets/cards/window.png',
+
+        //backgrounds
+            'assets/backgrounds/Background.png', 'assets/backgrounds/backround_lobby_empty.png', 'assets/backgrounds/backround_lobby_tap-to-start.png'], onFilesLoaded);
         this._pixi.start();
     }    
 

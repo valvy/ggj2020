@@ -238,12 +238,12 @@ export class GameManagerClientService
         
         // NOTE: this button should be temporary as players would normally only join
         // Create and show Start game button        
-        this.btnStartGame = Sprite.from('assets/cards/card-bg.png');
+        this.btnStartGame = Sprite.from('assets/backgrounds/backround_lobby_tap-to-start.png');
 
         // Set the initial position
         this.btnStartGame.anchor.set(0.5);
 
-        this.btnStartGame.scale.set(0.1);
+        this.btnStartGame.scale.set(0.35);
         this.btnStartGame.x = window.innerWidth  / 2;
         this.btnStartGame.y = window.innerHeight / 2;
         
@@ -463,10 +463,21 @@ export class GameManagerClientService
         });
     }
 
+    private lobby: Sprite;
     private joinGame():void{
         console.log("join game STATE "+this.currentState);
         this.doGetRequestJoinAndGetPlayerID().subscribe((data) =>
         {
+             this.lobby = new Sprite();
+             this.lobby = Sprite.from('assets/backgrounds/backround_lobby_empty.png');
+
+            // Set the initial position
+            this.lobby.anchor.set(0.5);
+    
+            this.lobby.scale.set(0.35);
+            this.lobby.x = window.innerWidth  / 2;
+            this.lobby.y = window.innerHeight / 2;
+            this.viewport.addChild(this.lobby);
             console.log("join game STATE "+data['id']);            
             // Store the given playerID
             this.playerId = data['id'];          
@@ -489,6 +500,7 @@ export class GameManagerClientService
             {
                 if (data['Online'] === 4 && this.currentState == this.STATE_WAITING_LOBBY){
                     this.currentState = this.STATE_WAITING_INTRO;
+                    this.viewport.removeChild(this.lobby);
                     // wait for 10 seconds for intro to resolve.
                     setTimeout(() => 
                     {

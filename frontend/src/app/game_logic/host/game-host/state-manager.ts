@@ -5,7 +5,7 @@ import { WaitingForInputs } from './states/WaitingForInput';
 import { State } from './states/State';
 import { ResolveDefendsState } from './states/ResolveDefendsState';
 import { ResolveAttacksState } from './states/ResolveAttacksState';
-import { Container, Point, Texture } from 'pixi.js';
+import { Container, Point, Texture, Sprite } from 'pixi.js';
 import { ResolveTurns } from './states/ResolveTurns';
 import { WaitingForPlayers } from './states/WaitingForPlayers';
 import { Observable } from 'rxjs';
@@ -128,13 +128,25 @@ export class StateManager
         return this.httpRequest.get(url, {headers: headers});
     }
 
+    lobby: Sprite;
     public createPlayers(playerData): void
     {
+        this.lobby = new Sprite();
+        this.lobby = Sprite.from('assets/backgrounds/Background.png');
+
+    // Set the initial position
+    this.lobby.anchor.set(0.5);
+
+    this.lobby.scale.set(0.8);
+    this.lobby.x = window.innerWidth  / 2;
+    this.lobby.y = window.innerHeight / 2;
+    this.viewport.addChild(this.lobby);
+
         const posX: number = (window.innerWidth - 75) / 2;
         const posY: number = (window.innerHeight - 75) / 2;
 
-        const positions: Point[] = [new Point(posX * .65 + 25, posY * .5 + 30), new Point(posX * 1.35 + 50, posY * .5 + 30), 
-            new Point(posX * .65 + 25, posY * 1.5 + 50), new Point(posX * 1.35 + 50, posY * 1.5 + 50)];
+        const positions: Point[] = [new Point(posX * .55 + 25, posY * .5 + 30), new Point(posX * 1.45 + 50, posY * .5 + 30), 
+            new Point(posX * .45 + 25, posY * 1.45 + 50), new Point(posX * 1.45 + 50, posY * 1.45 + 50)];
         
         playerData.forEach(playerdata => 
         {
