@@ -264,19 +264,21 @@ export class GameManagerClientService
 
     private updateCycle(delta: number): void
     {
-        const now = new Date();
-        const timeDiffSinceStartOfState = now.getTime() - this._date.getTime();
+        let now = new Date();
+        let timeDiffSinceStartOfState = now.getTime() - this._date.getTime();
         let timeLeft = this._currentTimeDelay - timeDiffSinceStartOfState / 1000;
         //console.log("timeLeft "+timeLeft);
         if (timeLeft <= 0 && this.currentState == this.STATE_SELECT_CARDS)
         {
             console.log("STATE STATE_SELECT_CARDS"+this.currentState);
             timeLeft = 0;
+            this.verifyAndSetSelectedCards();
             this.ClearCardsUI();
             this.doPostPlayerChosenCards().subscribe((data) =>
             {
                 console.log('posted player data!' + data);
             });
+            
             this._date = now;   // use now as new date time to caulcate the new timeDiff
             // Set the host resolve state the client is in
             this.currentState = this.STATE_RESOLVE_TURN;
@@ -286,6 +288,7 @@ export class GameManagerClientService
         {
             console.log("STATE STATE_RESOLVE_TURN "+this.currentState);
             this.GetNewHandOfCards();
+            this._date = now;   // use now as new date time to caulcate the new timeDiff
             // Set the host resolve state the client is in
             this.currentState = this.STATE_SELECT_CARDS;
             this._currentTimeDelay = this.INITIAL_START_SELECT_TIME;
@@ -336,7 +339,7 @@ export class GameManagerClientService
 
         for (let i: number = 0; i < 3; i++)
         {
-            const card: Card = new Card(this.textures);
+            let card: Card = new Card(this.textures);
             const randomAction = Math.floor(Math.random() * 3);
             const randomEntity = Math.floor(Math.random() * 3);
 
@@ -484,7 +487,7 @@ export class GameManagerClientService
                 this.processPlayerHoldingCards(data['Players'][this.playerId]['holding']);                
 
                 // Show new hand
-                this.showUI();   
+                this.showUI();
                 
                 // restart round time
                 this._currentTimeDelay = this.INITIAL_START_SELECT_TIME;
@@ -539,7 +542,7 @@ export class GameManagerClientService
     public doPostPlayerChosenCards(): Observable<any>
     {
         // do some verification around the cards
-        this.verifyAndSetSelectedCards();
+        //this.verifyAndSetSelectedCards();
 
         const headers: HttpHeaders = new HttpHeaders();
         //headers.append('Access-Control-Allow-Origin', '*');

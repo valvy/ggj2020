@@ -40,17 +40,17 @@ export class WaitingForInputs extends State
         this._text.text = 'Make your choice!\n' + timeLeft.toFixed(3);
         if (timeLeft <= 0)
         {
-
-            this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player').subscribe((data) =>
+            this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player').subscribe((playerData) =>
             {
-                console.log(data);
+                //clear actions.
                 this.actions.splice(0);
-                data.Players.forEach(e =>
+                playerData.Players.forEach(e =>
                 {
-                    const lastcardPlayed: iAction = e.lastCards.pop();
-                    if (lastcardPlayed)
+                    //get last played action
+                    const playedCards: iAction = e.playedCards.pop();
+                    if (playedCards)
                     {
-                        this.actions.push(lastcardPlayed);
+                        this.actions.push(playedCards);
                         let n: number = this.actions.length;
                         while (n > 1 && this.actions[n].priority > this.actions[n - 1].priority)
                         {
@@ -61,8 +61,10 @@ export class WaitingForInputs extends State
                     }
                 });
             });
-            this._stateManager.playerActions = this.actions;
-            this._stateManager.gotoState(StateType.ResolveTurns);
+            console.log(this.actions);
+            //this._stateManager.playerActions = this.actions;
+            //this._stateManager.gotoState(StateType.ResolveTurns);
+            this._stateManager.gotoState(StateType.WaitingForInput);
         }
     }
 }
