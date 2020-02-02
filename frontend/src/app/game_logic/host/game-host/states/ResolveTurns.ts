@@ -2,6 +2,7 @@ import { State } from './State';
 import { TextStyle, Text, Graphics, Container } from 'pixi.js';
 import { StateManager, StateType } from '../state-manager';
 import { ActionType } from 'src/app/game_logic/card';
+import { Constants } from 'src/app/Constants';
 
 export class ResolveTurns extends State
 {
@@ -26,9 +27,18 @@ export class ResolveTurns extends State
             }, 2500);
         } else
         {
-            console.log('end state resolve turns.');
-            //start new turn.
-            this._stateManager.gotoState(StateType.WaitingForInput);
+            //start new turn.            
+            this._stateManager.doGetRequest(Constants.baseUrl).subscribe((gameData) =>
+            {
+                if (gameData.over)
+                {
+                    this._stateManager.playerWon(gameData.winner);
+                    console.log('winner!');
+                } else
+                {
+                    this._stateManager.gotoState(StateType.WaitingForInput);
+                }
+            });
         }
     }
 
