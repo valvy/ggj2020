@@ -14,6 +14,11 @@ export class PlayerAction
         
     }
 
+    public hasActionBuild(): boolean
+    {
+        return this.fixed;
+    }
+
     public doFix(): void
     {
         this.fixed = true;

@@ -7,6 +7,7 @@ import { Texture, Sprite, Container, Text, Loader, Point, TextStyle } from 'pixi
 import { Card, ActionType, EntityType } from '../../card';
 import { Observable } from 'rxjs';
 import { resetFakeAsyncZone } from '@angular/core/testing';
+import { Constants } from 'src/app/Constants';
 
 @Injectable({
   providedIn: 'root'
@@ -122,7 +123,7 @@ export class GameManagerClientService
             dropShadowDistance: 6,
             wordWrap: true,
             wordWrapWidth: 440,
-        });        
+        });
         this.styleTxtDiscard = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 28,
@@ -157,16 +158,21 @@ export class GameManagerClientService
         });                  
     }
 
+    //requires that playerID is set
     private generatePlayerName(): void{
 
-        var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
-        var namesSecond = ["Nietsnut", "Tug", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie", "Landloper"];
+        //var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
+        //var namesSecond = ["Nietsnut", "Tug", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie", "Landloper"];
 
-        let first = Math.floor(Math.random() * namesFirst.length) + 1;
-        let second = Math.floor(Math.random() * namesSecond.length) + 1;
+        var namesFirst = ["Historic", "Sunny", "Luxurious", "Grand", "Silver", "Blue", "Pink"];
+        var namesSecond = ["Mansion", "Villa", "Manor", "Estate", "Chateau", "Abode", "Home"];
 
-        Math.floor(Math.random()*10) + 1
-        this.playerName = namesFirst[first]+" "+namesSecond[second];
+        //let first = Math.floor(Math.random() * namesFirst.length) + 1;
+        //let second = Math.floor(Math.random() * namesSecond.length) + 1;
+
+        //Math.floor(Math.random()*10) + 1
+        //this.playerName = namesFirst[first]+" "+namesSecond[second];
+        this.playerName = namesFirst[this.playerId]+" "+namesSecond[this.playerId];
     }
 
     private AddHelpText() : void
@@ -217,7 +223,7 @@ export class GameManagerClientService
         textHelpRight.y = height;// - ((window.innerHeight - 100) / 6);
         this.viewport.addChild(textHelpRight);
     }
-
+    
     public startGame(): void
     {
         this._date = new Date();
@@ -462,7 +468,7 @@ export class GameManagerClientService
             console.log("join game STATE "+data['id']);            
             // Store the given playerID
             this.playerId = data['id'];          
-            // generate a new player name
+            // generate a new player name..requires that playerID is set
             this.generatePlayerName(); 
             // Set initial state
             this.currentState = this.STATE_WAITING_LOBBY;
@@ -560,22 +566,22 @@ export class GameManagerClientService
 
     public doGetRequestStartAndGenerateServerGame(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/generate');
+        return this.doGetRequest(Constants.baseUrl + 'generate');
     }
 
     public doGetRequestJoinAndGetPlayerID(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/join');
+        return this.doGetRequest(Constants.baseUrl + 'join');
     }
 
     public doGetRequestGetPlayerCount(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/count');
+        return this.doGetRequest(Constants.baseUrl +'player/count');
     }
 
     public doGetRequestGetPlayerCard(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player');
+        return this.doGetRequest(Constants.baseUrl +'player');
     }
 
     public doPostPlayerChosenCards(): Observable<any>
@@ -586,7 +592,7 @@ export class GameManagerClientService
         const headers: HttpHeaders = new HttpHeaders();
         //headers.append('Access-Control-Allow-Origin', '*');
         //headers.append('Content-Type', 'application/json');
-        return this.doPostRequest('https://ggj2020.azurewebsites.net/api/game/player/'+this.playerId, 
+        return this.doPostRequest(Constants.baseUrl + 'player/'+this.playerId, 
         {
             id:this.playerId,
             play:this.currentCardPlay,
