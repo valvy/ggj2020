@@ -31,6 +31,21 @@ object CardPool {
   private val AMOUNT_OF_REST = 3
   private var deck = new Array[Card](AMOUNT_OF_CARDS)
 
+
+  def getRandomDestroyCard :Card = {
+    val random = Random
+
+    var randomDestroy = card_options(random.nextInt(card_options.length))
+
+    while(!randomDestroy.effect.equals(DESTROY_TAG)) {
+      println(randomDestroy.description)
+      randomDestroy = card_options(random.nextInt(card_options.length))
+    }
+    randomDestroy
+
+
+  }
+
   for(i <- 0 until AMOUNT_OF_WINDOWS) {
 
      deck(i) = card_options((i % 3))
@@ -59,7 +74,7 @@ object CardPool {
       card_options(0),
       card_options(0),
       card_options(3),
-      card_options(7)
+      card_options(6)
     )
   }
 
