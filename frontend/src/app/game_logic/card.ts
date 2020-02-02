@@ -61,7 +61,7 @@ export class Card extends Sprite
             case 2:  // Defend / Shield
             case 5:  // Defend / Shield
             case 8:  // Defend / Shield
-            return ActionType.Build;
+            return ActionType.Defend;
         }
     }
 

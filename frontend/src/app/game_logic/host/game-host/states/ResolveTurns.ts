@@ -28,7 +28,7 @@ export class ResolveTurns extends State
         {
             console.log('end state resolve turns.');
             //start new turn.
-            //this._stateManager.gotoState(StateType.WaitingForInput);
+            this._stateManager.gotoState(StateType.WaitingForInput);
         }
     }
 

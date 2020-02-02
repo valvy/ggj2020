@@ -27,16 +27,19 @@ export class WaitingForPlayers extends State
 
     private generateWorld(): void
     {
-        this._stateManager.doGetRequest(Constants.baseUrl + 'generate').subscribe((data) =>
+        this._stateManager.doDeleteRequest(Constants.baseUrl).subscribe((data) =>
         {
-            this._text.text = 'Waiting for players...';
-            this._poller = setInterval(() => this.pollForPlayers(), 200);          
-        }, () => 
-        {
-            //oops, there was already a game active.
-            this._text.text = 'Waiting for players...';
-            this._poller = setInterval(() => this.pollForPlayers(), 200);
-        });
+            this._stateManager.doGetRequest(Constants.baseUrl + 'generate').subscribe((data) =>
+            {
+                this._text.text = 'Waiting for players...';
+                this._poller = setInterval(() => this.pollForPlayers(), 200);          
+            }, () => 
+            {
+                //oops, there was already a game active.
+                this._text.text = 'Waiting for players...';
+                this._poller = setInterval(() => this.pollForPlayers(), 200);
+            });
+        });        
     }
 
     private pollForPlayers(): void
