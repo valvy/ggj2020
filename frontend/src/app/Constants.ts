@@ -23,6 +23,22 @@ export class Constants
         return style;
     }
 
+    static get debugStyle(): TextStyle
+    {
+        const style = new TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fontWeight: 'bold',
+            fill: '#ffffff', // gradient
+            stroke: '#444',
+            align : 'center',
+            strokeThickness: 1,
+            wordWrap: true,
+            wordWrapWidth: 440,
+        });
+        return style;
+    }
+
     static get baseUrl(): string
     {
         return 'https://ggj2020.azurewebsites.net/api/game/';

@@ -2,16 +2,14 @@ import { Sprite, Container } from 'pixi.js';
 
 export class PlayerAction
 {
-    private container: Container;
     private fixed: boolean;
     private shielded: boolean;
 
-    private fixedSprite: Sprite;
-    private shieldSprite: Sprite;
 
-    constructor(fixedSprite: Sprite, shieldSprite: Sprite)
+    constructor(private container: Sprite, private fixedSprite: Sprite, private shieldSprite: Sprite)
     {
-        
+        this.fixedSprite.anchor.set(0.5, 0.5);
+        this.shieldSprite.anchor.set(0.5, 0.5);
     }
 
     public hasActionBuild(): boolean

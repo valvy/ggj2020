@@ -84,6 +84,15 @@ export class StateManager
         this.currentState.stateStarted();
     }
 
+    public doDeleteRequest(url: string): Observable<any>
+    {
+        const headers: HttpHeaders = new HttpHeaders();
+        headers.append('Access-Control-Allow-Origin', '*');
+        headers.append('Cache-Control', 'no-cache');
+        headers.append('Content-Type', 'application/json');
+        return this.httpRequest.delete(url, {headers: headers});
+    }
+
     public doGetRequest(url: string): Observable<any>
     {
         const headers: HttpHeaders = new HttpHeaders();

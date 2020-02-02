@@ -19,11 +19,11 @@ export class PlayerHouse extends Sprite
         this.playerActions = new Map<string, PlayerAction[]>();        
         
         this.playerActions.set("Window", [
-            new PlayerAction(new Sprite(textures.get('assets/house/fixed/Windows.png')), new Sprite(textures.get('assets/house/fixed/Windows.png'))),
-            new PlayerAction(new Sprite(textures.get('assets/house/fixed/Windows.png')), new Sprite(textures.get('assets/house/fixed/Windows.png')))]);
+            new PlayerAction(this, new Sprite(textures.get('assets/house/fixed/Windows1.png')), new Sprite(textures.get('assets/house/shield/Windows1.png'))),
+            new PlayerAction(this, new Sprite(textures.get('assets/house/fixed/Windows2.png')), new Sprite(textures.get('assets/house/shield/Windows2.png')))]);
         
-        this.playerActions.set("Door", [new PlayerAction(new Sprite(textures.get('assets/house/fixed/Door.png')), new Sprite(textures.get('assets/house/fixed/Door.png')))]);
-        this.playerActions.set("Roof", [new PlayerAction(new Sprite(textures.get('assets/house/fixed/Roof.png')), new Sprite(textures.get('assets/house/fixed/Roof.png')))]);
+        this.playerActions.set("Door", [new PlayerAction(this, new Sprite(textures.get('assets/house/fixed/Door.png')), new Sprite(textures.get('assets/house/shield/Door.png')))]);
+        this.playerActions.set("Roof", [new PlayerAction(this, new Sprite(textures.get('assets/house/fixed/Roof.png')), new Sprite(textures.get('assets/house/shield/Roof.png')))]);
     }
 
     public hasPlayerAction(action: iAction): boolean
