@@ -122,7 +122,7 @@ export class GameManagerClientService
             dropShadowDistance: 6,
             wordWrap: true,
             wordWrapWidth: 440,
-        });        
+        });
         this.styleTxtDiscard = new TextStyle({
             fontFamily: 'Arial',
             fontSize: 28,
@@ -157,6 +157,7 @@ export class GameManagerClientService
         });                  
     }
 
+    //requires that playerID is set
     private generatePlayerName(): void{
 
         //var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
@@ -221,7 +222,7 @@ export class GameManagerClientService
         textHelpRight.y = height;// - ((window.innerHeight - 100) / 6);
         this.viewport.addChild(textHelpRight);
     }
-
+    
     public startGame(): void
     {
         this._date = new Date();
@@ -466,7 +467,7 @@ export class GameManagerClientService
             console.log("join game STATE "+data['id']);            
             // Store the given playerID
             this.playerId = data['id'];          
-            // generate a new player name
+            // generate a new player name..requires that playerID is set
             this.generatePlayerName(); 
             // Set initial state
             this.currentState = this.STATE_WAITING_LOBBY;
