@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import { StartGameState } from './states/GameIntroState';
 import { PlayerHouse } from './player-house';
 import { GameLoaderService } from 'src/app/services/game-loader.service';
-import { Card } from '../../card';
+import { Card, ActionType } from '../../card';
 
 export enum StateType
 {
@@ -71,7 +71,7 @@ export class StateManager
         this.states.set(StateType.GameIntro, new StartGameState());
         this.states.set(StateType.ResolveTurns, new ResolveTurns());
         this.states.set(StateType.ResolvingDefends, new ResolveDefendsState());
-        this.states.set(StateType.ResolvingAttacks, new ResolveAttacksState());
+        this.states.set(StateType.ResolvingAttacks, new ResolveAttacksState(this.textures.get('assets/cards/attack.png')));
         this.states.set(StateType.ResolvingBuilds, new ResolveBuildsState());
         this.states.set(StateType.ResolvingWinner, new ResolveWinnerState());
 
@@ -199,8 +199,23 @@ export class StateManager
             const action: iAction = this.actions.shift();
             let playerHouse: PlayerHouse = this.playerhouses.get(action.playerId);
 
-           // let card: Card = new Card(this._stateManager.getTextures());
-            //this.card.init();
+            let card: Card = new Card(this.textures);
+            let actionType = Card.GetActionTypeByCardID(action.id);
+            let entityType = Card.GetEnityTypeByCardID(action.id);
+            card.init(actionType, entityType, window.innerHeight / 5, action.id);
+            
+            if (actionType === ActionType.Attack)
+            {
+                card.createCard(new Point(window.innerWidth / 2, window.innerHeight / 2));
+                this.gotoState(StateType.ResolvingAttacks);
+            } else
+                card.createCard(new Point(playerHouse.position.x, playerHouse.position.y));
+            
+            this.viewport.addChild(card);
+            setTimeout(() =>
+            {
+                this.viewport.removeChild(card);
+            }, 1250);
 
             if (action.effect === 'Create')
             {
