@@ -19,16 +19,14 @@ export class ResolveTurns extends State
         console.log('start handle state');
         if (this._stateManager.numberOfPlayerActions > 0)
         {
-            //handle the next action.
-            let nextAction = this._stateManager.playerAction;
-            console.log('play', nextAction);
+            this._stateManager.handlePlayerAction();
 
             setTimeout(() => {
-                this._stateManager.gotoState(StateType.ResolveTurns);                
+                this._stateManager.gotoState(StateType.ResolveTurns);              
             }, 2500);
         } else
         {
-            console.log('end state');
+            console.log('end state resolve turns.');
             //start new turn.
             //this._stateManager.gotoState(StateType.WaitingForInput);
         }

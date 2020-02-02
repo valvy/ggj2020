@@ -1,5 +1,5 @@
 import { State } from './State';
-import { TextStyles } from 'src/app/textStyle';
+import { Constants } from 'src/app/Constants';
 import { Text, Graphics } from 'pixi.js';
 import { StateType } from '../state-manager';
 
@@ -14,7 +14,7 @@ export class StartGameState extends State
         this._date = new Date();
         this._startTime = 1;
 
-        this._text = new Text('10.000', TextStyles.style);
+        this._text = new Text('10.000', Constants.style);
         this._text.anchor.set(0.5, 0.5);
         this._text.x = window.innerWidth / 2;
         this._text.y = window.innerHeight / 2;

@@ -7,6 +7,7 @@ import { Texture, Sprite, Container, Text, Loader, Point, TextStyle } from 'pixi
 import { Card, ActionType, EntityType } from '../../card';
 import { Observable } from 'rxjs';
 import { resetFakeAsyncZone } from '@angular/core/testing';
+import { Constants } from 'src/app/Constants';
 
 @Injectable({
   providedIn: 'root'
@@ -565,22 +566,22 @@ export class GameManagerClientService
 
     public doGetRequestStartAndGenerateServerGame(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/generate');
+        return this.doGetRequest(Constants.baseUrl + 'generate');
     }
 
     public doGetRequestJoinAndGetPlayerID(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/join');
+        return this.doGetRequest(Constants.baseUrl + 'join');
     }
 
     public doGetRequestGetPlayerCount(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/count');
+        return this.doGetRequest(Constants.baseUrl +'player/count');
     }
 
     public doGetRequestGetPlayerCard(): Observable<any>
     {
-        return this.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player');
+        return this.doGetRequest(Constants.baseUrl +'player');
     }
 
     public doPostPlayerChosenCards(): Observable<any>
@@ -591,7 +592,7 @@ export class GameManagerClientService
         const headers: HttpHeaders = new HttpHeaders();
         //headers.append('Access-Control-Allow-Origin', '*');
         //headers.append('Content-Type', 'application/json');
-        return this.doPostRequest('https://ggj2020.azurewebsites.net/api/game/player/'+this.playerId, 
+        return this.doPostRequest(Constants.baseUrl + 'player/'+this.playerId, 
         {
             id:this.playerId,
             play:this.currentCardPlay,

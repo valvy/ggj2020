@@ -30,7 +30,8 @@ export class iAction
     name: string;
     description: string;
     effect: string;
-    id: number
+    id: number;
+    playerId: number;
 
     public get priority(): number
     {
@@ -143,7 +144,34 @@ export class StateManager
         if (this.actions.length > 0)
         {
             const action: iAction = this.actions.shift();
-            this.playerhouses.get(action.id);
-        }
+            console.log(action);
+            //build -> on house.
+            //shield -> on house.
+            //destroy -> on house with item.
+            let playerHouse: PlayerHouse = this.playerhouses.get(action.playerId);
+            if (action.effect === 'Create')
+            {
+                playerHouse.doCreate(action);
+            } else if (action.effect === 'Shield')
+            {
+                playerHouse.doShield(action);
+            } else if (action.effect === 'Destroy')
+            {
+                let possibleTargets: PlayerHouse[] = [];
+                this.playerhouses.forEach((p: PlayerHouse) =>
+                {
+                    if (p.hasPlayerAction(action))
+                    {
+                        possibleTargets.push(p);
+                    }                    
+                });
+                let i = Math.floor(Math.random() * possibleTargets.length);
+                let target = possibleTargets[i];
+                if (target)
+                {
+                    target.doDestroy(action);
+                } else console.log('there is no target');
+            }
+        }        
     }
 };
