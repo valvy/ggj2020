@@ -49,14 +49,14 @@ export class Card extends Sprite
     public static GetActionTypeByCardID(id:any): ActionType{
         switch(id){
             case 0:  // Build / Fix
-            case 2:  // Build / Fix
+            case 3:  // Build / Fix
             case 6:  // Build / Fix
             return ActionType.Build;
             case 1:  // Attack / Destroy
-            case 3:  // Attack / Destroy
+            case 4:  // Attack / Destroy
             case 7:  // Attack / Destroy
             return ActionType.Attack;
-            case 4:  // Defend / Shield
+            case 2:  // Defend / Shield
             case 5:  // Defend / Shield
             case 8:  // Defend / Shield
             return ActionType.Build;
@@ -65,17 +65,17 @@ export class Card extends Sprite
 
     public static GetEnityTypeByCardID(id:any): EntityType{
         switch(id){
-            case 0:  // Doors
-            case 1:  // 
-            case 4:  // 
-            return EntityType.Door;
-            case 2:  // Windows
-            case 3:  // 
-            case 5:  // 
-            return EntityType.Window;
-            case 6:  // Roofs
+            case 6:  // Doors
             case 7:  // 
-            case 8:  // Defend / Shield
+            case 8:  // 
+            return EntityType.Door;
+            case 0:  // Windows
+            case 1:  // 
+            case 2:  // 
+            return EntityType.Window;
+            case 3:  // Roofs
+            case 4:  // 
+            case 5:  // Defend / Shield
             return EntityType.Roof;
         }
     }

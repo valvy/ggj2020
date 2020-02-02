@@ -9,7 +9,7 @@ import { Container, Point, Texture } from 'pixi.js';
 import { ResolveTurns } from './states/ResolveTurns';
 import { WaitingForPlayers } from './states/WaitingForPlayers';
 import { Observable } from 'rxjs';
-import { StartGameState } from './states/StartGameState';
+import { StartGameState } from './states/GameIntroState';
 import { PlayerHouse } from './player-house';
 import { GameLoaderService } from 'src/app/services/game-loader.service';
 
@@ -17,7 +17,7 @@ export enum StateType
 {
     WaitingForInput,
     WaitingForPlayers,
-    StartGame,
+    GameIntro,
     ResolveTurns,
     ResolvingDefends,
     ResolvingAttacks,
@@ -59,7 +59,7 @@ export class StateManager
 
         this.states.set(StateType.WaitingForInput, new WaitingForInputs());
         this.states.set(StateType.WaitingForPlayers, new WaitingForPlayers());
-        this.states.set(StateType.StartGame, new StartGameState());
+        this.states.set(StateType.GameIntro, new StartGameState());
         this.states.set(StateType.ResolveTurns, new ResolveTurns());
         this.states.set(StateType.ResolvingDefends, new ResolveDefendsState());
         this.states.set(StateType.ResolvingAttacks, new ResolveAttacksState());
@@ -87,7 +87,7 @@ export class StateManager
     {
         const headers: HttpHeaders = new HttpHeaders();
         headers.append('Access-Control-Allow-Origin', '*');
-
+        headers.append('Cache-Control', 'no-cache');
         headers.append('Content-Type', 'application/json');
         return this.httpRequest.get(url, {headers: headers});
     }

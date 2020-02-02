@@ -1,5 +1,5 @@
 import { State } from './State';
-import { TextStyle, Text } from 'pixi.js';
+import { Text } from 'pixi.js';
 import { StateType } from '../state-manager';
 import { HttpClient } from '@angular/common/http';
 import { TextStyles } from 'src/app/textStyle';
@@ -30,12 +30,12 @@ export class WaitingForPlayers extends State
         this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/generate').subscribe((data) =>
         {
             this._text.text = 'Waiting for players...';
-            this._poller = setInterval(() => this.pollForPlayers(), 1500);          
+            this._poller = setInterval(() => this.pollForPlayers(), 200);          
         }, () => 
         {
             //oops, there was already a game active.
             this._text.text = 'Waiting for players...';
-            this._poller = setInterval(() => this.pollForPlayers(), 1500);
+            this._poller = setInterval(() => this.pollForPlayers(), 200);
         });
     }
 
@@ -52,7 +52,7 @@ export class WaitingForPlayers extends State
                     const players = data.Players;            
             
                     this._stateManager.createPlayers(players);
-                    this._stateManager.gotoState(StateType.ResolveTurns);
+                    this._stateManager.gotoState(StateType.GameIntro);
                     clearInterval(this._poller);
                 });
             }

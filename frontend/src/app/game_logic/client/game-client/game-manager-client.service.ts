@@ -39,7 +39,7 @@ export class GameManagerClientService
     private currentCardDiscard:any;
 
     private INITIAL_START_SELECT_TIME: number = 10;     // same time as server/game-host player select cards time.
-    private INITIAL_START_RESOLVE_TIME: number = 20;    // same time as game-host resolve time
+    private INITIAL_START_RESOLVE_TIME: number = 10;    // same time as game-host resolve time
     private INITIAL_POLL_LOBBY_TIME: number = 2;        // 2 seconds, very short
     private _currentTimeDelay: number;
     private _date: Date;
@@ -48,6 +48,7 @@ export class GameManagerClientService
     private STATE_WAITING_FOR_HOST:number = 2;
     private STATE_SELECT_CARDS:number = 3;
     private STATE_RESOLVE_TURN:number = 4;
+    private STATE_WAITING_INTRO: number = 5;
     private currentState:number = -1;
     private bPollingForPlayerCount:boolean = false;
 
@@ -336,6 +337,7 @@ export class GameManagerClientService
     private showUI():void
     {
         console.log("showUI STATE "+this.currentState);
+        this._currentTimeDelay = 10;
 
         for (let i: number = 0; i < 3; i++)
         {
@@ -450,14 +452,20 @@ export class GameManagerClientService
         {
             if (data['Online'])
             {
-                console.log(" -> poll player count is "+data['Online']);
                 if (data['Online'] === 4 && this.currentState == this.STATE_WAITING_LOBBY){
-                    // set in between host, so it stops polling and will wait for first hand data.
-                    this.currentState == this.STATE_WAITING_FOR_HOST;
-                    // continue with game
-                    // by getting a set of cards for the player and entering the select card state
-                    this.GetNewHandOfCards(); 
-                    this.bPollingForPlayerCount = false;
+                    this.currentState = this.STATE_WAITING_INTRO;
+                    // wait for 10 seconds for intro to resolve.
+                    setTimeout(() => 
+                    {
+                        // set in between host, so it stops polling and will wait for first hand data.
+                        this.currentState == this.STATE_WAITING_FOR_HOST;
+                        this._currentTimeDelay = this.INITIAL_START_RESOLVE_TIME;
+                        // continue with game
+                        // by getting a set of cards for the player and entering the select card state
+                        this.GetNewHandOfCards(); 
+                        this.bPollingForPlayerCount = false;
+                    }, 10000);
+                    
                 }else{
                     // not enough player yet...wait and try again later.
                     this.bPollingForPlayerCount = false;
@@ -489,8 +497,12 @@ export class GameManagerClientService
                 // Show new hand
                 this.showUI();
                 
+                console.log('get player data');
+
                 // restart round time
                 this._currentTimeDelay = this.INITIAL_START_SELECT_TIME;
+
+                this._date = new Date();
 
                 // Set the player select card state the client is in
                 this.currentState = this.STATE_SELECT_CARDS;
@@ -575,6 +587,8 @@ export class GameManagerClientService
         }else if(this.currentCardUIC.getIsPlayed){
             this.currentCardPlay = this.currentCardUIC.actualCardID;             
         }
+        console.log('played', this.currentCardPlay);
+        console.log('discarded', this.currentCardDiscard);
 
         // if any of the play actions hasn't been done... random fill it.
         if (this.currentCardPlay < 0 && this.currentCardDiscard < 0){
@@ -633,5 +647,7 @@ export class GameManagerClientService
                 this.currentCardDiscard = randSelectedCard2;
             } 
         }
+        console.log('played after blaat', this.currentCardPlay);
+        console.log('discarded after blaat', this.currentCardDiscard);
     }
 }

@@ -9,6 +9,7 @@ export class WaitingForInputs extends State
     private _startTime: number;
     private _text: Text;
     private _date: Date;
+    private _doRequest: boolean = false;
 
     constructor()
     {
@@ -25,6 +26,7 @@ export class WaitingForInputs extends State
         this._text.x = window.innerWidth / 2;
         this._text.y = window.innerHeight / 2;
         this._viewport.addChild(this._text);
+        this._doRequest = true;
     }
 
     public stateEnded(): void
@@ -38,33 +40,37 @@ export class WaitingForInputs extends State
         const diff = now.getTime() - this._date.getTime();
         const timeLeft = this._startTime - diff / 1000;
         this._text.text = 'Make your choice!\n' + timeLeft.toFixed(3);
-        if (timeLeft <= 0)
+        if (timeLeft <= 0 && this._doRequest)
         {
-            this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player').subscribe((playerData) =>
+            this._viewport.removeChild(this._text);
+
+            if (timeLeft < -3) //wait for 3 more seconds before requesting data
+            this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/3').subscribe((playerData) =>
             {
+                console.log(playerData);
+                this._doRequest = false;
                 //clear actions.
                 this.actions.splice(0);
-                playerData.Players.forEach(e =>
-                {
-                    //get last played action
-                    const playedCards: iAction = e.playedCards.pop();
-                    if (playedCards)
-                    {
-                        this.actions.push(playedCards);
-                        let n: number = this.actions.length;
-                        while (n > 1 && this.actions[n].priority > this.actions[n - 1].priority)
-                        {
-                            const temp: iAction = JSON.parse(JSON.stringify(this.actions[n]));
-                            this.actions[n] = this.actions[n - 1];
-                            this.actions[n - 1] = temp;
-                        }
-                    }
-                });
+                // playerData.Players.forEach(e =>
+                // {
+                //     //get last played action
+                //     const playedCard: iAction = e.lastCards.pop();
+                //     if (playedCard)
+                //     {
+                //         this.actions.push(playedCard);
+                //         let n: number = this.actions.length;
+                //         while (n > 1 && this.actions[n].priority > this.actions[n - 1].priority)
+                //         {
+                //             const temp: iAction = JSON.parse(JSON.stringify(this.actions[n]));
+                //             this.actions[n] = this.actions[n - 1];
+                //             return this.actions[n - 1] = temp;
+                //         }
+                //     }
+                // });
+                // this._stateManager.playerActions = this.actions;
+                // this._stateManager.gotoState(StateType.WaitingForInput);
+                //this._stateManager.gotoState(StateType.WaitingForInput);
             });
-            console.log(this.actions);
-            //this._stateManager.playerActions = this.actions;
-            //this._stateManager.gotoState(StateType.ResolveTurns);
-            this._stateManager.gotoState(StateType.WaitingForInput);
         }
     }
 }
