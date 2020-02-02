@@ -159,14 +159,18 @@ export class GameManagerClientService
 
     private generatePlayerName(): void{
 
-        var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
-        var namesSecond = ["Nietsnut", "Tug", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie", "Landloper"];
+        //var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
+        //var namesSecond = ["Nietsnut", "Tug", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie", "Landloper"];
 
-        let first = Math.floor(Math.random() * namesFirst.length) + 1;
-        let second = Math.floor(Math.random() * namesSecond.length) + 1;
+        var namesFirst = ["Historic", "Sunny", "Luxurious", "Grand", "Silver", "Blue", "Pink"];
+        var namesSecond = ["Mansion", "Villa", "Manor", "Estate", "Chateau", "Abode", "Home"];
 
-        Math.floor(Math.random()*10) + 1
-        this.playerName = namesFirst[first]+" "+namesSecond[second];
+        //let first = Math.floor(Math.random() * namesFirst.length) + 1;
+        //let second = Math.floor(Math.random() * namesSecond.length) + 1;
+
+        //Math.floor(Math.random()*10) + 1
+        //this.playerName = namesFirst[first]+" "+namesSecond[second];
+        this.playerName = namesFirst[this.playerId]+" "+namesSecond[this.playerId];
     }
 
     private AddHelpText() : void
