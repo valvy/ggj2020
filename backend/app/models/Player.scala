@@ -21,7 +21,9 @@ case class Player(id: Int,
                   mustMake: Array[Card],
                   effects: ArrayBuffer[Card],
                   var round: Int,
-                  var lastCards : ArrayBuffer[Card]
+                  var lastCards : ArrayBuffer[Card],
+                  var lastDiscardCards: ArrayBuffer[Card],
+                  var events : ArrayBuffer[String]
                  )
 
 

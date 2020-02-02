@@ -31,6 +31,8 @@ export class Card extends Sprite
     private isPlayed:boolean;
     private isDiscarded:boolean;
 
+    private gameManagerClient:any;
+
 
     // STATIC CARD CODES - MAPPED WITH SERVER BACKEND AND WITH HOST-OUTPUT
     // Note when modifying these make sure the match server and host-output
@@ -114,7 +116,7 @@ export class Card extends Sprite
         this.buttonMode = true;
     }
 
-    public init(action: ActionType, entity: EntityType, height: number, cardID:number): void
+    public init(action: ActionType, entity: EntityType, height: number, cardID:number, gameManagerClient:any): void
     {
         this.cardID = cardID;
         this.actionType = action;
@@ -123,6 +125,7 @@ export class Card extends Sprite
         this.entityTexture = this.textures.get('assets/cards/' + entity + '.png');
         this.texture = this.cardTexture;
         this._size = (height / this.height);
+        this.gameManagerClient = gameManagerClient;
 
         this.isPlayed = false;
         this.isDiscarded = false;
@@ -222,7 +225,6 @@ export class Card extends Sprite
         this.snapCardToSeletionArea();
     }
 
-
     private snapCardToSeletionArea() : void
     {
         let widthPartialSize = (window.innerWidth / 4);
@@ -248,5 +250,15 @@ export class Card extends Sprite
         }
 
         // TODO if another card has already been put on selcted or discared reset the other card.
+        if (this.gameManagerClient){
+            this.gameManagerClient.cardSelectedUpdated(this);
+        }
+    }
+
+    public resetSelected() : void {
+        this.isPlayed = false;
+        this.isDiscarded = false;
+        let middleSide = window.innerWidth / 2;
+        this.position.x = middleSide;
     }
 }
