@@ -1,7 +1,8 @@
 import { State } from './State';
-import { TextStyle, Text } from 'pixi.js';
+import { Text } from 'pixi.js';
 import { StateType } from '../state-manager';
 import { HttpClient } from '@angular/common/http';
+import { TextStyles } from 'src/app/textStyle';
 
 export class WaitingForPlayers extends State
 {
@@ -16,23 +17,7 @@ export class WaitingForPlayers extends State
 
     public stateStarted(): void
     {
-        const style = new TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fontWeight: 'bold',
-            fill: ['#ffffff', '#00ff99'], // gradient
-            stroke: '#4a1850',
-            align : 'center',
-            strokeThickness: 5,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-            wordWrap: true,
-            wordWrapWidth: 440,
-        });
-        this._text = new Text('Creating game...\n' + '', style);
+        this._text = new Text('Creating game...\n' + '', TextStyles.style);
         this._text.anchor.set(0.5, 0.5);
         this._text.x = window.innerWidth / 2;
         this._text.y = window.innerHeight / 2;
@@ -42,28 +27,36 @@ export class WaitingForPlayers extends State
 
     private generateWorld(): void
     {
-        this._stateManager.doGetRequest('http://localhost:9000/game/generate').subscribe((data) =>
+        this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/generate').subscribe((data) =>
         {
-            if (data['Hello world'])
-            {
-                this._text.text = 'Waiting for players...';
-                this._poller = setInterval(() => this.pollForPlayers(), 1500);
-            }            
+            this._text.text = 'Waiting for players...';
+            this._poller = setInterval(() => this.pollForPlayers(), 200);          
+        }, () => 
+        {
+            //oops, there was already a game active.
+            this._text.text = 'Waiting for players...';
+            this._poller = setInterval(() => this.pollForPlayers(), 200);
         });
     }
 
     private pollForPlayers(): void
     {
-        this._stateManager.doGetRequest('http://localhost:9000/game/player/count').subscribe((data) =>
+        this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/count').subscribe((data) =>
         {
             const numberofplayers: number = data.Online;
             this._text.text = 'Waiting for players...\n' + numberofplayers + ' players connected.';
             if (numberofplayers === 4)
             {
-                this._stateManager.gotoState(StateType.WaitingForInput);
-                clearInterval(this._poller);
+                this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player').subscribe((data) =>
+                {
+                    const players = data.Players;            
+            
+                    this._stateManager.createPlayers(players);
+                    this._stateManager.gotoState(StateType.GameIntro);
+                    clearInterval(this._poller);
+                });
             }
-        });
+        });        
     }
 
     public stateEnded(): void

@@ -27,6 +27,12 @@ export class Card extends Sprite
     private startDragHorizontal: number;
     private _size: number;
 
+    private cardID:number;  // card if recieved from server and goes back to server.... should macth Host en Server codes
+    private isPlayed:boolean;
+    private isDiscarded:boolean;
+
+    private gameManagerClient:any;
+
 
     // STATIC CARD CODES - MAPPED WITH SERVER BACKEND AND WITH HOST-OUTPUT
     // Note when modifying these make sure the match server and host-output
@@ -45,14 +51,14 @@ export class Card extends Sprite
     public static GetActionTypeByCardID(id:any): ActionType{
         switch(id){
             case 0:  // Build / Fix
-            case 2:  // Build / Fix
+            case 3:  // Build / Fix
             case 6:  // Build / Fix
             return ActionType.Build;
             case 1:  // Attack / Destroy
-            case 3:  // Attack / Destroy
+            case 4:  // Attack / Destroy
             case 7:  // Attack / Destroy
             return ActionType.Attack;
-            case 4:  // Defend / Shield
+            case 2:  // Defend / Shield
             case 5:  // Defend / Shield
             case 8:  // Defend / Shield
             return ActionType.Build;
@@ -61,19 +67,34 @@ export class Card extends Sprite
 
     public static GetEnityTypeByCardID(id:any): EntityType{
         switch(id){
-            case 0:  // Doors
-            case 1:  // 
-            case 4:  // 
-            return EntityType.Door;
-            case 2:  // Windows
-            case 3:  // 
-            case 5:  // 
-            return EntityType.Window;
-            case 6:  // Roofs
+            case 6:  // Doors
             case 7:  // 
-            case 8:  // Defend / Shield
+            case 8:  // 
+            return EntityType.Door;
+            case 0:  // Windows
+            case 1:  // 
+            case 2:  // 
+            return EntityType.Window;
+            case 3:  // Roofs
+            case 4:  // 
+            case 5:  // Defend / Shield
             return EntityType.Roof;
         }
+    }
+
+    public get getIsDiscarded(): boolean
+    {
+        return this.isDiscarded;
+    }
+    
+    public get getIsPlayed(): boolean
+    {
+        return this.isPlayed;
+    }
+
+    public get actualCardID(): number
+    {
+        return this.cardID;
     }
 
     public get actualHeight(): number
@@ -95,14 +116,19 @@ export class Card extends Sprite
         this.buttonMode = true;
     }
 
-    public init(action: ActionType, entity: EntityType, height: number): void
+    public init(action: ActionType, entity: EntityType, height: number, cardID:number, gameManagerClient:any): void
     {
+        this.cardID = cardID;
         this.actionType = action;
         this.entityType = entity;
         this.actionTexture = this.textures.get('assets/cards/' + action + '.png');
         this.entityTexture = this.textures.get('assets/cards/' + entity + '.png');
         this.texture = this.cardTexture;
         this._size = (height / this.height);
+        this.gameManagerClient = gameManagerClient;
+
+        this.isPlayed = false;
+        this.isDiscarded = false;
 
         this.    // events for drag start
         on('mousedown', this.onDragStart)
@@ -199,7 +225,6 @@ export class Card extends Sprite
         this.snapCardToSeletionArea();
     }
 
-
     private snapCardToSeletionArea() : void
     {
         let widthPartialSize = (window.innerWidth / 4);
@@ -209,12 +234,31 @@ export class Card extends Sprite
 
         //console.log("position "+this.position.x+" this.actualWidth  "+this.actualWidth+" leftSide"+leftSide  );
 
+        // reset selected state
+        this.isPlayed = false;
+        this.isDiscarded = false;
+
+        // actually snap to a side or back to middle
         if ( this.position.x < leftSide + (this.actualWidth / 2) ){
             this.position.x = leftSide;
+            this.isDiscarded = true;
         }else if(this.position.x > rightSide - (this.actualWidth / 2) ){
             this.position.x = rightSide;
+            this.isPlayed = true;
         }else{
             this.position.x = middleSide;
         }
+
+        // TODO if another card has already been put on selcted or discared reset the other card.
+        if (this.gameManagerClient){
+            this.gameManagerClient.cardSelectedUpdated(this);
+        }
+    }
+
+    public resetSelected() : void {
+        this.isPlayed = false;
+        this.isDiscarded = false;
+        let middleSide = window.innerWidth / 2;
+        this.position.x = middleSide;
     }
 }
