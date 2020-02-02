@@ -23,7 +23,9 @@
 
       <script type = "text/javascript">
       $(() =>{
-            $.ajax({url: "http://localhost:9001/game/generate",
+            const url = "https://ggj2020.azurewebsites.net/api/game/generate"
+           //const url = "http://localhost:9000/api/game/generate";
+            $.ajax({url:url,
             crossDomain: true,
             success: function(result){
                 console.log(result)

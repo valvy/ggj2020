@@ -3,4 +3,4 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-->  /                      controllers.PlayerRouter
+->  /api                      controllers.PlayerRouter

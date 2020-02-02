@@ -1,5 +1,5 @@
 package controllers
-
+import scala.collection.mutable._
 import javax.inject._
 import play.api._
 import play.api.libs.json._
@@ -81,8 +81,21 @@ class GameController @Inject()(
   }
 
 
+  /**
+    * Get all player information.
+    * @return
+    */
   def getPlayers = Action { implicit request: Request[AnyContent] =>
-    Ok(Json.obj("Players" -> GameService.getPlayers))
+      val players = GameService.getPlayers
+      // Check if there is a null.
+      var result : ArrayBuffer[Player]= ArrayBuffer()
+      for(i : Player <- players) {
+        if(i != null) {
+          result += i
+        }
+      }
+
+      Ok(Json.obj("Players" -> result))
   }
 
   /**
