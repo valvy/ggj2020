@@ -128,6 +128,11 @@ export class StateManager
         this.actions = value;
     }
 
+    public get playerAction(): iAction
+    {
+        return this.actions.shift();    
+    }
+
     public get numberOfPlayerActions(): number
     {
         return this.actions.length;

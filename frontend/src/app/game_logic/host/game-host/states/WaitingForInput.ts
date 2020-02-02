@@ -19,7 +19,7 @@ export class WaitingForInputs extends State
     public stateStarted(): void
     {
         this._date = new Date();
-        this._startTime = 10;
+        this._startTime = 1;
 
         this._text = new Text('10.000', TextStyles.style);
         this._text.anchor.set(0.5, 0.5);
@@ -34,6 +34,32 @@ export class WaitingForInputs extends State
         this._viewport.removeChild(this._text);
     }
 
+    private onPlayerDataReceived(players): void
+    {
+        //clear actions.
+        this.actions.splice(0);
+        players.forEach(e =>
+        {
+            //get last played action
+            let playerInfo = e.PlayerInfo;
+            let playedCard: iAction = playerInfo.lastCards.pop();
+            if (playedCard)
+            {
+                this.actions.push(playedCard);
+                let n: number = this.actions.length;
+            
+                while (n > 1 && this.actions[n - 1].priority > this.actions[n - 2].priority)
+                {
+                    const temp: iAction = JSON.parse(JSON.stringify(this.actions[n]));
+                    this.actions[n] = this.actions[n - 1];
+                    this.actions[n - 1] = temp;
+                }
+            }
+        });
+        this._stateManager.playerActions = this.actions;
+        this._stateManager.gotoState(StateType.ResolveTurns);
+    }
+
     public handle(delta: number): void
     {
         const now = new Date();
@@ -45,32 +71,21 @@ export class WaitingForInputs extends State
             this._viewport.removeChild(this._text);
 
             if (timeLeft < -3) //wait for 3 more seconds before requesting data
-            this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/3').subscribe((playerData) =>
             {
-                console.log(playerData);
                 this._doRequest = false;
-                //clear actions.
-                this.actions.splice(0);
-                // playerData.Players.forEach(e =>
-                // {
-                //     //get last played action
-                //     const playedCard: iAction = e.lastCards.pop();
-                //     if (playedCard)
-                //     {
-                //         this.actions.push(playedCard);
-                //         let n: number = this.actions.length;
-                //         while (n > 1 && this.actions[n].priority > this.actions[n - 1].priority)
-                //         {
-                //             const temp: iAction = JSON.parse(JSON.stringify(this.actions[n]));
-                //             this.actions[n] = this.actions[n - 1];
-                //             return this.actions[n - 1] = temp;
-                //         }
-                //     }
-                // });
-                // this._stateManager.playerActions = this.actions;
-                // this._stateManager.gotoState(StateType.WaitingForInput);
-                //this._stateManager.gotoState(StateType.WaitingForInput);
-            });
+                let players = [];
+                for (let i = 0; i < 4; i++)
+                {
+                    this._stateManager.doGetRequest('https://ggj2020.azurewebsites.net/api/game/player/' + i).subscribe((playerData) =>
+                    {
+                        players.push(playerData);
+                        if (players.length === 4)
+                        {
+                            return this.onPlayerDataReceived(players);
+                        }
+                    });
+                }
+            }
         }
     }
 }

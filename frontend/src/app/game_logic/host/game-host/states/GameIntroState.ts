@@ -12,7 +12,7 @@ export class StartGameState extends State
     public stateStarted(): void
     {
         this._date = new Date();
-        this._startTime = 10;
+        this._startTime = 1;
 
         this._text = new Text('10.000', TextStyles.style);
         this._text.anchor.set(0.5, 0.5);
