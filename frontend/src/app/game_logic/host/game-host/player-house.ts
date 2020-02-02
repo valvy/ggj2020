@@ -1,6 +1,7 @@
-import { Sprite, Point, Texture } from 'pixi.js';
+import { Sprite, Point, Texture, Text } from 'pixi.js';
 import { PlayerAction } from './playerAction';
 import { iAction } from './state-manager';
+import { Constants } from 'src/app/Constants';
 
 export class PlayerHouse extends Sprite
 {
@@ -39,23 +40,53 @@ export class PlayerHouse extends Sprite
 
     public doCreate(action: iAction): void
     {
-        //console.log('do action', action);
+        console.log('do create', action);
         let playerActions: PlayerAction[] = this.playerActions.get(action.name);
-        playerActions[0].doFix();
+
+        if (playerActions.length > 1 && playerActions[0].hasActionBuild())
+        {
+            playerActions[1].doFix();
+        } else
+        {
+            playerActions[0].doFix();
+        }
     }
 
     public doShield(action: iAction): void
     {
-        //console.log('do action', action);
+        console.log('do shield', action);
         let playerActions: PlayerAction[] = this.playerActions.get(action.name);
-        playerActions[0].doShield();
+        
+        if (playerActions.length > 1 && playerActions[0].hasActionShield())
+        {
+            playerActions[1].doShield();
+        } else
+        {
+            playerActions[0].doShield();
+        }
     }
 
     public doDestroy(action: iAction): void
     {
-        console.log('deestroy', action);
+        console.log('do destroy', action);
         let playerActions: PlayerAction[] = this.playerActions.get(action.name);
-        playerActions[0].doDestroy();
+        if (playerActions.length > 1 && playerActions[0].hasActionBuild())
+        {
+            playerActions[1].doDestroy();
+        } else
+        {
+            playerActions[0].doDestroy();
+        }
+    }
+
+    public showGameResult(text: string): void
+    {
+        const textresult = new Text(text, Constants.style);
+        textresult.anchor.set(0.5, 0.5);
+        textresult.position.set(0, -150);
+        textresult.scale.set(5, 5);
+
+        this.addChild(textresult);
     }
 
     public get actualHeight(): number

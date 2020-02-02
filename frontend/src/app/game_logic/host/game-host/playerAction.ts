@@ -5,7 +5,6 @@ export class PlayerAction
     private fixed: boolean;
     private shielded: boolean;
 
-
     constructor(private container: Sprite, private fixedSprite: Sprite, private shieldSprite: Sprite)
     {
         this.fixedSprite.anchor.set(0.5, 0.5);
@@ -17,9 +16,15 @@ export class PlayerAction
         return this.fixed;
     }
 
+    public hasActionShield(): boolean
+    {
+        return this.shielded;
+    }
+
     public doFix(): void
     {
         this.fixed = true;
+        console.log(this.fixedSprite);
         this.container.addChild(this.fixedSprite);
     }
 

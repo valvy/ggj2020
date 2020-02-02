@@ -50,7 +50,10 @@ export class GameLoaderService
         this._fileLoader = new FileLoader();
         this._fileLoader.loadTextures(['assets/cards/card-bg.png', 
         //house stuff
-        'assets/house/Base_House.png', 'assets/house/fixed/Door.png', 'assets/house/fixed/Roof.png', 'assets/house/fixed/Windows.png' ,
+        'assets/house/Base_House.png', 'assets/house/fixed/Door.png', 'assets/house/fixed/Roof.png', 'assets/house/fixed/Windows1.png', 'assets/house/fixed/Windows2.png',
+
+        //shield stuff
+         'assets/house/shield/Door.png', 'assets/house/shield/Roof.png', 'assets/house/shield/Windows1.png', 'assets/house/shield/Windows2.png',
 
         //cards stuff
             'assets/cards/defend.png', 'assets/cards/attack.png', 'assets/cards/build.png',
