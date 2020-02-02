@@ -51,6 +51,7 @@ object GameService {
   /**
     * Resets the game.
     * This is a static class.
+    *
     * @return
     */
   def resetGame = {
@@ -65,6 +66,70 @@ object GameService {
     CardPool.resetDeck
   }
 
+  private def deleteOAllfTypeCard(card: Card) = {
+    for (player <- players) {
+      deleteCard(player, card)
+    }
+  }
+
+
+  def executeDisasterOnPlayers(disaster: String): Unit = {
+    assertState(GameState.Turn == state, "You can't do a turn right now.")
+    if (disaster.equals("Hurricane")) {
+      deleteOAllfTypeCard(CardPool.getRandomDestroyCard)
+    }
+    else if (disaster.equals("Raiders")) {
+      val player = getPlayerWithMostStuff()
+      if (player.playedCards.length != 0) {
+        val randomNr = Random.nextInt(player.playedCards.length)
+        deleteCard(player, player.playedCards(randomNr))
+      }
+    }
+  }
+
+  def getPlayerWithMostStuff(): Player = {
+    var index = 0
+
+    for (i <- 1 until players.length) {
+      if (players(i).playedCards.length > players(index).playedCards.length) {
+        index = i
+      }
+    }
+    players(index)
+
+  }
+
+  private def deleteCard(victim: Player, card: Card): Boolean = {
+    var isDone = false
+    for (i <- 0 until victim.playedCards.length) {
+      if (victim.playedCards(i).name == card.name & !isDone) {
+        // yeey the victim has this card.
+        // Check for a shield
+        var isSafed = false
+        for (j <- 0 until victim.effects.length) {
+          if (victim.playedCards(i).name.equals(victim.effects(j).name) && !isSafed) {
+            isSafed = true
+            // remove item from the effects.
+            victim.effects.remove(j)
+
+            logger.info(s"the victim of ${card.description} was ${victim.id} and lost a effect")
+          }
+        }
+
+        if (!isSafed) {
+          victim.playedCards.remove(i)
+          isDone = true
+          logger.info(s"the victim of ${card.description} was ${victim.id} and lost the element")
+        }
+      }
+    }
+    if (!isDone) {
+      logger.warn("The destroy card was not used.....")
+
+    }
+    isDone
+  }
+
 
   /**
     * Destroys a random card from one of the users...
@@ -73,40 +138,17 @@ object GameService {
     * @param id       The user casting this card
     * @param playCard Which card is casted.
     */
-  private def executeDestroyCard(id: Player, playCard: Card) {
+  private def executeRandomDestroyCard(id: Player, playCard: Card) = {
     // shuffle it in a random order
     val randomizedList = Random.shuffle(List(0, 1, 2, 3))
     var isDone = false
     for (i <- randomizedList) {
-      val victim = players(i)
-      // Check if the victim has the card.
-      for (i <- 0 until victim.playedCards.length) {
-        if (victim.playedCards(i).name == playCard.name & !isDone) {
-          // yeey the victim has this card.
-          // Check for a shield
-          var isSafed = false
-          for (j <- 0 until victim.effects.length) {
-            if (victim.playedCards(i).name.equals(victim.effects(j).name) && !isSafed) {
-              isSafed = true
-              // remove item from the effects.
-              victim.effects.remove(j)
-              logger.info(s"the victim of ${playCard.description} was ${victim.id} and lost a effect")
-            }
-          }
+      if (!isDone) {
+        isDone = deleteCard(players(i), playCard)
 
-          if (!isSafed) {
-            victim.playedCards.remove(i)
-            isDone = true
-            logger.info(s"the victim of ${playCard.description} was ${victim.id} and lost the element")
-          }
-
-        }
       }
+    }
 
-    }
-    if (!isDone) {
-      logger.warn("The destroy card was not used.....")
-    }
 
   }
 
@@ -135,6 +177,7 @@ object GameService {
 
   /**
     * Plays a specific card.
+    *
     * @param id
     * @param playCard
     * @param discardCard
@@ -150,15 +193,14 @@ object GameService {
     player.round += 1
     if (discardIndex == -1) {
       player.events += "Invalid Discard card"
-    //  logger.info(s"Player ${player.id} has used a card that was his.. ignore the whole round all input..")
+      //  logger.info(s"Player ${player.id} has used a card that was his.. ignore the whole round all input..")
     }
-    if(playIndex == -1){
+    if (playIndex == -1) {
       player.events += "Invalid play card"
     }
 
 
-
-    if(playIndex != -1) {
+    if (playIndex != -1) {
       //parseActionCard(player,playIndex)
       val typeOfPlayCard = player.holding(playIndex)
 
@@ -173,7 +215,7 @@ object GameService {
 
       // check if its a destroyable.
       if (typeOfPlayCard.effect.equals(CardPool.DESTROY_TAG)) {
-        executeDestroyCard(player, typeOfPlayCard)
+        executeRandomDestroyCard(player, typeOfPlayCard)
       }
       // Its a create card.
       else if (typeOfPlayCard.effect.equals(CardPool.CREATE_TAG)) {
@@ -218,15 +260,16 @@ object GameService {
     }
 
 
-    if(discardIndex != -1) {
+    if (discardIndex != -1) {
       player.events += s"Player has succesfully discarded ${player.holding(discardIndex).description}"
       player.lastDiscardCards += player.holding(discardIndex)
       // Remove the last elements
-      if(player.lastDiscardCards.length > 15) {
+      if (player.lastDiscardCards.length > 15) {
         player.lastDiscardCards.remove(0)
       }
       player.holding(discardIndex) = CardPool.getCard
     }
+
     /**
       * Check for winning condition
       */
@@ -237,8 +280,8 @@ object GameService {
       state = GameState.Over
     }
     // Remove the last elements
-    if(player.events.length > 15) {
-      player.effects.remove(0)
+    if (player.events.length > 15) {
+      player.events.remove(0)
     }
 
     player
