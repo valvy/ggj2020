@@ -6,6 +6,7 @@ import { FileLoader } from '../../fileloader';
 import { Texture, Sprite, Container, Text, Loader, Point, TextStyle } from 'pixi.js';
 import { Card, ActionType, EntityType } from '../../card';
 import { Observable } from 'rxjs';
+import { resetFakeAsyncZone } from '@angular/core/testing';
 
 @Injectable({
   providedIn: 'root'
@@ -364,7 +365,8 @@ export class GameManagerClientService
             card.init(  Card.GetActionTypeByCardID(cardValue), 
                         Card.GetEnityTypeByCardID(cardValue), 
                         height,
-                        cardValue);
+                        cardValue,
+                        this);
 
             /*card.init(
                 ActionType[Object.keys(ActionType)[randomAction]], 
@@ -381,6 +383,31 @@ export class GameManagerClientService
         }
         
         this.AddHelpText();
+    }
+
+    public cardSelectedUpdated(card:Card):void {
+        if (card.getIsDiscarded){
+            
+            if (card != this.currentCardUIA && this.currentCardUIA.getIsDiscarded){
+                card.resetSelected();                
+            }else if(card != this.currentCardUIB && this.currentCardUIB.getIsDiscarded){
+                card.resetSelected();                
+            }else if (card != this.currentCardUIC && this.currentCardUIC.getIsDiscarded){
+                card.resetSelected();
+            }
+            this.currentCardDiscard = card.actualCardID;
+
+        }else if (card.getIsPlayed){
+                        
+            if(card != this.currentCardUIA && this.currentCardUIA.getIsPlayed){
+                card.resetSelected();
+            }else if (card != this.currentCardUIB && this.currentCardUIB.getIsPlayed){
+                card.resetSelected();
+            }else if(card != this.currentCardUIC && this.currentCardUIC.getIsPlayed){
+                card.resetSelected();
+            }
+            this.currentCardPlay = card.actualCardID;             
+        }
     }
 
     /*
