@@ -7,15 +7,22 @@ export class PlayerHouse extends Sprite
 {
     private size: number;
     private textures: Map<string, Texture>;
-    private playerActions: Map<string, PlayerAction[]>
+    private playerActions: Map<string, PlayerAction[]>;
+    private playerName: Text;
 
-    init(p: Point, width: number, textures: Map<string, Texture>): void
+    init(name: string, p: Point, width: number, textures: Map<string, Texture>): void
     {
         this.texture = textures.get('assets/house/Base_House.png');
         this.size = width / this.width;
         this.scale.set(this.size, this.size);
         this.position = p;
         this.anchor.set(0.5, 0.5);
+        
+        this.playerName = new Text(name, Constants.style);
+        this.playerName.anchor.set(0.5, 0.5);
+        this.playerName.position.set(0, -1050);
+        this.playerName.scale.set(5, 5);
+        this.addChild(this.playerName);
 
         this.playerActions = new Map<string, PlayerAction[]>();        
         

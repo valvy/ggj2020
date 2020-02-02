@@ -242,6 +242,8 @@ export class GameManagerClientService
 
         // Set the initial position
         this.btnStartGame.anchor.set(0.5);
+
+        this.btnStartGame.scale.set(0.1);
         this.btnStartGame.x = window.innerWidth  / 2;
         this.btnStartGame.y = window.innerHeight / 2;
         
@@ -259,7 +261,7 @@ export class GameManagerClientService
         // sprite.on('tap', onClick); // touch-only
         
         this.viewport.addChild(this.btnStartGame); 
-
+        
         console.log("GAME STARTED");
     }
 

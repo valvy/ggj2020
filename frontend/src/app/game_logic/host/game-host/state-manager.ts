@@ -80,6 +80,24 @@ export class StateManager
         });
     }
     
+  //requires that playerID is set
+  public getPlayerName(id: number): string{
+
+    //var namesFirst = ["Bewilderd", "Hearthless", "Terrifying", "Disgrunteld", "Amazing", "Delicious", "Unearhtly", "Left handed", "Martian", "Appetijtelijke", "Handeloze", "Spoiled"];
+    //var namesSecond = ["Nietsnut", "Tug", "Destroyer", "Witch", "Padlock", "Schildknaap", "Ramenwasser", "Dakbedekker", "Timmervrouw", "Stucadoerie", "Landloper"];
+
+    var namesFirst = ["Historic", "Sunny", "Luxurious", "Grand", "Silver", "Blue", "Pink"];
+    var namesSecond = ["Mansion", "Villa", "Manor", "Estate", "Chateau", "Abode", "Home"];
+
+    //let first = Math.floor(Math.random() * namesFirst.length) + 1;
+    //let second = Math.floor(Math.random() * namesSecond.length) + 1;
+
+    //Math.floor(Math.random()*10) + 1
+    //this.playerName = namesFirst[first]+" "+namesSecond[second];
+    return namesFirst[id]+" "+namesSecond[id];
+}
+
+
     public gotoState(stateType: StateType): void
     {
         const state: State = this.states.get(stateType);
@@ -117,12 +135,12 @@ export class StateManager
         const positions: Point[] = [new Point(posX * .65 + 25, posY * .5 + 30), new Point(posX * 1.35 + 50, posY * .5 + 30), 
             new Point(posX * .65 + 25, posY * 1.5 + 50), new Point(posX * 1.35 + 50, posY * 1.5 + 50)];
         
-        playerData.forEach(element => 
+        playerData.forEach(playerdata => 
         {
-            const id = element.id
+            const id = playerdata.id
             const playerHouse: PlayerHouse = new PlayerHouse();
             this.viewport.addChild(playerHouse);
-            playerHouse.init(positions[id], posY * 1.25, this.textures);
+            playerHouse.init(this.getPlayerName(id), positions[id], posY * 1.25, this.textures);
             this.playerhouses.set(id, playerHouse);    
         });
     }

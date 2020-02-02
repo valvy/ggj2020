@@ -165,17 +165,17 @@ export class Card extends Sprite
         let text = new Text(this.actionType + ' ' + this.entityType,
         {fontFamily : 'Arial', fontSize: 45, fill : this.color, align : 'center'});
         text.anchor.set(0.5, 0.5);
-        text.position.set(0, -200);
+        text.position.set(0, -600);
+        text.scale.set(4);
         this.addChild(text);
     }
 
     private addAction(): void
     {
         const actionIcon: Sprite = new Sprite(this.actionTexture);
-        actionIcon.position.set(150, 200);
+        actionIcon.position.set(700, 900);
         actionIcon.anchor.set(0.5, 0.5);
-        actionIcon.scale.set(0.2, 0.2);
-        actionIcon.tint = this.color;
+        actionIcon.scale.set(1, 1);
         this.addChild(actionIcon);
     }
 
@@ -184,8 +184,7 @@ export class Card extends Sprite
         const entityIcon: Sprite = new Sprite(this.entityTexture);
         entityIcon.position.set(0, 0);
         entityIcon.anchor.set(0.5, 0.5);
-        entityIcon.scale.set(0.3, 0.3);
-        entityIcon.tint = this.color;
+        entityIcon.scale.set(1, 1);
         this.addChild(entityIcon);
     }
 
