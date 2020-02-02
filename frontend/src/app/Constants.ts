@@ -1,6 +1,6 @@
 import { TextStyle } from 'pixi.js';
 
-export class TextStyles
+export class Constants
 {
     static get style(): TextStyle
     {
@@ -21,5 +21,10 @@ export class TextStyles
             wordWrapWidth: 440,
         });
         return style;
+    }
+
+    static get baseUrl(): string
+    {
+        return 'https://ggj2020.azurewebsites.net/api/game/';
     }
 }

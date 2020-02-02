@@ -1,7 +1,7 @@
 import { StateType, iAction } from './../state-manager';
 import { State } from './State';
-import { TextStyle, Text } from 'pixi.js'; 
-import { TextStyles } from 'src/app/textStyle';
+import { Text } from 'pixi.js';
+import { Constants } from 'src/app/Constants';
 
 export class WaitingForInputs extends State
 {
@@ -21,7 +21,7 @@ export class WaitingForInputs extends State
         this._date = new Date();
         this._startTime = 1;
 
-        this._text = new Text('10.000', TextStyles.style);
+        this._text = new Text('10.000', Constants.style);
         this._text.anchor.set(0.5, 0.5);
         this._text.x = window.innerWidth / 2;
         this._text.y = window.innerHeight / 2;
@@ -45,6 +45,7 @@ export class WaitingForInputs extends State
             let playedCard: iAction = playerInfo.lastCards.pop();
             if (playedCard)
             {
+                playedCard.playerId = playerInfo.id;
                 this.actions.push(playedCard);
                 let n: number = this.actions.length;
             
