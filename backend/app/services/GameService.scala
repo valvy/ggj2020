@@ -242,7 +242,7 @@ object GameService {
         val haveTheItem = player.playedCards.find(x => typeOfPlayCard.name == x.name)
 
         if (existsInEffects == None && haveTheItem != None) {
-          player.effects += typeOfPlayCard
+          player.effects += typeOfPlayCardfind
         }
         if (haveTheItem == None) {
           logger.info(s"Player ${id} has casted ${typeOfPlayCard.description} but he did not repair it first and so it is ignored")
